@@ -96,7 +96,7 @@
               });
               localStorage.setItem("token", response.data.jwtToken);
               console.log(response.data.jwtToken);
-              if (response.data.obj === true)
+              if (response.data.obj.isActive === true)
                 _this.enter(localStorage.getItem("token"));
               else
                 _this.enterActive(localStorage.getItem("token"));

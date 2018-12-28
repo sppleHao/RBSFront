@@ -138,7 +138,7 @@
       </Modal>
     </div>
     <div class="footer" v-if="myTeamPresentation.isTeamSignUp">
-      <Button class="button-large" v-if="seminar.seminarState=='正在进行'" style="background-color: #EA4C4C;color: #FFFFFF;"  @click="enterSeminarPresenting">进入讨论课</Button>
+      <Button class="button-large"  style="background-color: #EA4C4C;color: #FFFFFF;"  @click="enterSeminarPresenting">进入讨论课</Button>
       <Button class="button-large" v-if="seminar.seminarState!='已完成'" style="background-color: #F8F8F8 ;color:#96C864; border:#AAC882 1px solid; " @click="showModal('ppt')">提交PPT</Button>
       <Button class="button-large" v-if="seminar.seminarState=='已完成'&&!isAfterReportDDL" style="background-color: #F8F8F8 ;color:#96C864; border:#AAC882 1px solid; "  @click="showModal('report')">书面报告提交</Button>
       <button class="button-large" v-if="seminar.seminarState=='已完成'&&isAfterReportDDL"  style="background-color:#96C864; border:#AAC882 1px solid;" @click="enterSeminarScore">查看成绩</button>

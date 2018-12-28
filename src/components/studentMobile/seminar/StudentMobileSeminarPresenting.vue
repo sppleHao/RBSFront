@@ -93,33 +93,28 @@
         },
         connection() {
           // 建立连接对象
-          let socket = new SockJS('http://siwv3n.natappfree.cc/rbs-websocket');
+          let socket = new SockJS('http://ncg4bc.natappfree.cc/rbs-websocket');
           // 获取STOMP子协议的客户端对象
 
           this.stompClient = Stomp.over(socket);
 
-          // 定义客户端的认证信息,按需求配置
-          let headers = {
-            'Access-Control-Allow-Origin':'*',
-            'Authorization':'Bearer' +localStorage.token
-          }
-
-          // 向服务器发起websocket连接
-          this.stompClient.connect(headers,() => {
+          //向服务器发起websocket连接
+          this.stompClient.connect(() => {
 
             //监听下一组
-            this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.classId}/nextTeam`, (msg) => {
+            this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/nextTeam`, (msg) => {
               console.log('下一组')
               console.log(msg);
             },headers);
 
             //监听抽取提问
-            this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.classId}/pickQuestion`, (msg) => {
+            this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/pickQuestion`, (msg) => {
               console.log('抽取提问')
               console.log(msg);
             },headers);
 
-            //发送学生提问
+
+          //发送学生提问
             // this.stompClient.send(``,
             //   headers,
             //   JSON.stringify({sender: '',chatType: 'JOIN'}),
@@ -128,6 +123,7 @@
             // 连接发生错误时的处理函数
             console.log('失败')
             console.log(err);
+            console.log(err)
           });
          },
         disconnect() {

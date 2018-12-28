@@ -135,7 +135,8 @@
           inviteStudentsUrl:'',
           deleteMemberUrl:'',
           dissolveTeamUrl:'',
-          applyUrl:''
+          applyUrl:'',
+          leaveTeamUrl:''
         }
       },
       created(){
@@ -222,6 +223,7 @@
               this.deleteMemberUrl =`team/${team.teamId}/member`
               this.dissolveTeamUrl=`team/${team.teamId}/allmember`
               this.applyUrl = `team/${team.teamId}/request`
+              this.leaveTeamUrl = `team/${team.teamId}/myself`
               this.team = team
 
             })
@@ -269,7 +271,15 @@
         },
         //todo
         leaveTeam(){
-          this.$Message.error('退出成功')
+          this.$http.delete(this.leaveTeamUrl)
+            .then(res=>{
+              this.$Message.success('退出成功！')
+              this.$router.go(-1)
+            })
+            .catch(err=>{
+              console.log(err)
+              this.$Message.error(err.message)
+            })
         },
         dissolveTeam(){
           this.$http.delete(this.dissolveTeamUrl)
@@ -301,15 +311,20 @@
             }
         },
         sendApply(){
-          this.$http.post(this.applyUrl,{reason:this.applyReason})
-            .then(res=>{
-              this.$Message.success('申请成功！')
-              this.applyModal=false
-            })
-            .catch(err=>{
-              this.$Message.error('不能发送重复的请求，请等待老师处理！')
-              console.log(err)
-            })
+          if (this.applyReason==false){
+            this.$Message.error('申请理由不能为空')
+          }
+          else {
+            this.$http.post(this.applyUrl,{reason:this.applyReason})
+              .then(res=>{
+                this.$Message.success('申请成功！')
+                this.applyModal=false
+              })
+              .catch(err=>{
+                this.$Message.error('不能发送重复的请求，请等待老师处理！')
+                console.log(err)
+              })
+          }
         },
         handleSelectionChange(NTStudent){
           NTStudent.isSelect = ! NTStudent.isSelect

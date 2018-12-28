@@ -152,6 +152,7 @@
                 this.isAfterDDL = true
               }
 
+              //todo test
               this.isAfterDDL =true
 
             })

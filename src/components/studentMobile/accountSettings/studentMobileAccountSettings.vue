@@ -75,7 +75,7 @@
           return{
             user:'',
             adminEmail:'',
-            getUserUrl:'/user/information/'
+            getUserUrl:'/user/information'
           }
       },
       created(){
@@ -83,7 +83,7 @@
       },
       methods:{
         getUser:function(url,params){
-          this.$http.get(url,{params})
+          this.$http.get('/api'+this.getUserUrl,{params})
             .then((res)=>{
 
               let datas = res.data

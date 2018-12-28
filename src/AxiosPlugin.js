@@ -2,9 +2,9 @@ require('es6-promise').polyfill()
 import axios from 'axios'
 
 export const Axios = axios.create({
-  baseURL: 'http://119.29.24.35:8000',
-  // baseURL: 'http://ypmrdf.natappfree.cc/',
-  // baseURL:'http://10.30.18.148:8080',
+  // baseURL: 'http://119.29.24.35:8000',
+  baseURL: 'http://ncg4bc.natappfree.cc/',
+  // baseURL:'http://loaclhost:8081',
   timeout: 10000,
 })
 
@@ -32,6 +32,8 @@ Axios.interceptors.request.use(config => {
 Axios.interceptors.response.use(res =>{
 
   console.log('before receive...')
+
+  console.log(res)
 
   console.log(res.status)
 
