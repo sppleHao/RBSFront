@@ -61,6 +61,7 @@
         </div>
       </router-link>
 
+
     </div>
   </div>
 </template>
@@ -106,7 +107,7 @@
 <style scoped>
   .header{
     text-align: center;
-    background: #96C864;
+    background: #f8f8f8;
     width:100%;
     height: 8%;
     border:1px solid transparent;
@@ -123,13 +124,14 @@
   .root {
     height: 100%;
     width: 100%;
-    background: #fff;
+    background: #f2f2f2;
   }
   .main{
     /*margin-top: 8%;*/
-    height: 92%;
-    width: 100%;
-    background: #fff;
+    height: 89%;
+    width: 96%;
+    margin: 2%;
+    background-color: white;
   }
   .intro{
     height: 20%;

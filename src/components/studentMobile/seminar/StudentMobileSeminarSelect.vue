@@ -7,7 +7,7 @@
 
       <div class="scroll">
 
-        <div  v-for="round in rounds" :key="round.roundOrder">
+        <div  v-for="round in rounds" :key="round.roundId">
           <div class="title" @click="round.vis=!round.vis" >
 
             <img class="icon" src="../../../assets/book.png" />

@@ -5,7 +5,6 @@
     </div>
     <div class="main">
       <div>
-
         <div class="team-cell">
           <span class="team-cell-front">
             组名:
@@ -205,6 +204,10 @@
             if (!this.team.name){
               this.$Message.error('小组名不能为空')
               return
+            }
+
+            if (!this.team.classId){
+              this.$Message.error('请选择班级')
             }
 
             if (this.inviteStudentsId){

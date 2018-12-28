@@ -47,7 +47,7 @@ new Vue({
   el: '#app',
   router,
   created(){
-    // axios.defaults.baseURL='http://119.29.24.35:8000'
+    axios.defaults.baseURL='http://119.29.24.35:8000'
     // axios.defaults.baseURL='http://w2bdu5.natappfree.cc'
     // axios.defaults.headers['Authorization'] = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNDMyMDE2MjIwMjgzNCIsImV4cCI6MTU0NjQ0NDQwMX0.Oppld11SZm9xe0xN9GQxR66yMfOq3a4zIQLA6XrwDQPXIEeqbQEv5NIhKaHbMUBMX3VUv4Fjtll7gNK3eSzE5Q'
   },

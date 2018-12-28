@@ -5,13 +5,13 @@
   </div>
   <div class="main">
     <CellGroup>
-      <div v-for="(pre,index) in allPres" :key="pre.preOrder" :class="{shade:index%2!=0}" style="display: flex;height:8vmax;align-items: center;">
+      <div v-for="(pre,index) in allPres" :key="pre.attendanceId" :class="{shade:index%2!=0}" style="display: flex;height:8vmax;align-items: center;">
         <div style="width: 30%;justify-content: center;text-align: center">
           <span class="span1" slot="default">第{{index+1}}组</span>
         </div>
         <div style="width: 40%;justify-content: center;text-align: center">
           <span class="span2" v-if="!pre.teamId">未报名</span>
-          <span class="span2" v-else-if="pre.preFileName" slot="default" @click="downloadPPT">{{pre.preFileName}}</span>
+          <span class="span2" v-else-if="pre.preFileName" slot="default"><a  @click="downloadPPT(pre.attendanceId)">{{pre.preFileName}}</a></span>
           <span class="span2" v-else>暂未上传</span>
         </div>
         <Cell  style="width: 30%;justify-content: center;text-align: center">
@@ -50,6 +50,7 @@
 
               datas.forEach(presentation=>{
                 let pre = {
+                  attendanceId:presentation.id,
                   teamId:presentation.teamBaseInfoVO.id,
                   teamNumber:presentation.teamBaseInfoVO.teamSerials,
                   teamName:presentation.teamBaseInfoVO.teamName,
@@ -70,8 +71,19 @@
 
             })
         },
-          downloadPPT(){
-            alert('download ppt..')
+          downloadPPT(id){
+            this.$http.get(`attendance/${id}/ppt`,{
+              responseType:'arraybuffer'
+            })
+              .then(res=>{
+                let blob = new Bolb([res.data],{type:"application/force-download"})
+                let objectUrl = URL.createObjectURL(blob)
+                window.location.href = objectUrl;
+                this.$Message.success('下载成功')
+              })
+              .catch(err=>{
+                console.log(err)
+              })
           }
       },
       computed:{

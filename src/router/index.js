@@ -58,7 +58,6 @@ export default new Router({
     {
       path: '/',
       redirect: '/MTlogin',//设置默认指向的路径
-      name: 'teacherMobileLogin'
     },
 
     {

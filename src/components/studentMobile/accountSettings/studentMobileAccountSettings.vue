@@ -37,7 +37,7 @@
             {{user.birth}}
           </span>
         </Cell>
-        <Cell to="">
+        <Cell :to="{name:'teacherMobileAlterEmail'}">
           <span slot="default" class="cell-title">
             联系方式(邮箱):
           </span>
@@ -45,7 +45,7 @@
             {{user.email}}
           </span>
         </Cell>
-        <Cell to="">
+        <Cell :to="{name:'teacherMobileAlterPassword'}">
           <span slot="default" class="cell-title">
             账户密码
           </span>

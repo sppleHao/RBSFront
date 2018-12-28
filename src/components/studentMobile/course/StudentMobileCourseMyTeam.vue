@@ -21,11 +21,12 @@
           <div class="team-cell" v-for="teamMember in team.teamMembers">
             <span class="team-cell-front">组员</span>
             <span class="team-cell-center">{{teamMember.account}}</span>
-            <span class="team-cell-end">{{teamMember.userName}}</span>
+            <div class="team-cell-end" v-if="isLeader" @click="deleteMember(teamMember.studentId)">{{teamMember.userName}}</div>
+            <div class="team-cell-end" v-else>{{teamMember.userName}}</div>
           </div>
         </div>
 
-        <div v-if="!isLeader">
+        <div v-if="isLeader">
           <div class="team-cell" style="background-color: #f2f2f2;height: 8vmax;justify-content: center;">
             <span style="text-align: center;font-size: 4vmax;color: green">
               添加成员
@@ -76,7 +77,7 @@
       </Modal>
     </div>
 
-    <div v-if="!isLeader" class="footer">
+    <div v-if="isLeader" class="footer">
       <div v-if="team.teamState=='invalid'">
         <Button class="button-three" type="error"  ghost @click="applyModal = true">提交审核</Button>
       </div>
@@ -88,7 +89,7 @@
       </div>
     </div>
     <div v-else class="footer">
-      <Button class="button-exit" type="error" ghost @clcik="leaveTeam">退出小组</Button>
+      <button class="button-exit" type="error" @click="leaveTeam">退出小组</button>
     </div>
 
 
@@ -120,7 +121,7 @@
           spanLeft:'font-size:2.1vmax;margin-left:',
           spanGreen:'font-size:2.1vmax;color:green;',
           spanBlack:'font-size:2.1vmax;color:black;',
-          isLeader:true ,
+          isLeader:false ,
           applyModal:false,
           applyReason:'',
           title: this.$route.query.courseName + this.$route.query.className,
@@ -266,8 +267,9 @@
               this.$Message.error(err.message)
             })
         },
+        //todo
         leaveTeam(){
-          this.$Message.success('退出成功！')
+          this.$Message.error('退出成功')
         },
         dissolveTeam(){
           this.$http.delete(this.dissolveTeamUrl)

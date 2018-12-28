@@ -4,14 +4,13 @@ import axios from 'axios'
 export const Axios = axios.create({
   baseURL: 'http://119.29.24.35:8000',
   // baseURL: 'http://ypmrdf.natappfree.cc/',
+  // baseURL:'http://10.30.18.148:8080',
   timeout: 10000,
 })
 
 // 在发送请求之前做某件事
 Axios.interceptors.request.use(config => {
-
-  console.log(localStorage.token)
-
+  
   console.log('before send...')
   // 加上 token
   if (localStorage.token) {
@@ -34,7 +33,6 @@ Axios.interceptors.response.use(res =>{
 
   console.log('before receive...')
 
-  console.log(localStorage.token)
   console.log(res.status)
 
   //对响应数据做些事

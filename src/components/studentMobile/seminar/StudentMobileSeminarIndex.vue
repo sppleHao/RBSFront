@@ -215,11 +215,9 @@
                 teamNumber:datas.teamInfo.teamSerials,
                 teamName:datas.teamInfo.teamName,
                 teamId:datas.teamInfo.id,
-                teamState:'invalid',
                 teamLeader:teamLeader,
                 teamMembers:teamMembers,
                 class:cClass,
-                teamState:'valid'
               }
 
 
@@ -370,27 +368,35 @@
           return false;
         },
         upload () {
-          this.loadingStatus = true;
-          let formData = new FormData()
+          if (this.file.size>0){
+            this.loadingStatus = true;
+            let formData = new FormData()
 
-          formData.append('ppt',this.file)
+            formData.append('ppt',this.file)
 
-          console.log(this.file)
+            console.log(this.file.size)
 
-          let config = {
-            headers:{'Content-Type':'multipart/form-data'}
-          };
+            let config = {
+              headers:{'Content-Type':'multipart/form-data'}
+            };
 
+            this.$http.post(`/attendance/${this.myTeamPresentation.attendanceId}/${this.uploadFileType}`,formData,config)
+              .then(res=>{
+                this.file = null;
+                this.loadingStatus = false;
+                this.$Message.success('上传成功!')
+              })
+              .catch(err=>{
+                this.file = null;
+                this.loadingStatus = false;
+                this.$Message.error('错误')
+                console.log(err)
+              })
+          }
+          else {
+            this.$Message.error('所选择的文件大小为0!')
+          }
 
-          this.$http.post(`/attendance/${this.myTeamPresentation.attendanceId}/${this.uploadFileType}`,formData,config)
-            .then(res=>{
-              this.file = null;
-              this.loadingStatus = false;
-              this.$Message.success('上传成功!')
-            })
-            .catch(err=>{
-              console.log(err)
-            })
         }
       }
     }
