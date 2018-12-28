@@ -12,7 +12,7 @@
         <div style="width: 40%;justify-content: center;text-align: center">
           <span class="span2" v-if="!pre.teamId">未报名</span>
           <span class="span2" v-else-if="pre.preFileName" slot="default"><a  @click="downloadPPT(pre.attendanceId)">{{pre.preFileName}}</a></span>
-          <span class="span2" v-else>暂未上传</span>
+          <span class="span2" style="color: red" v-else>暂未上传</span>
         </div>
         <Cell  style="width: 30%;justify-content: center;text-align: center">
           <span class="span1" slot="default">{{pre.teamNumber}}</span>

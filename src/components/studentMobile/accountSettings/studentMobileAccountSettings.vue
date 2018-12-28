@@ -83,7 +83,7 @@
       },
       methods:{
         getUser:function(url,params){
-          this.$http.get('/api'+this.getUserUrl,{params})
+          this.$http.get(this.getUserUrl,{params})
             .then((res)=>{
 
               let datas = res.data
