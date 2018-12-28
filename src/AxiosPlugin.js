@@ -2,22 +2,26 @@ require('es6-promise').polyfill()
 import axios from 'axios'
 
 export const Axios = axios.create({
-  // baseURL: 'http://119.29.24.35:8000',
-  baseURL: 'http://siwv3n.natappfree.cc',
+  baseURL: 'http://119.29.24.35:8000',
+  // baseURL: 'http://ypmrdf.natappfree.cc/',
   timeout: 10000,
 })
 
 // 在发送请求之前做某件事
 Axios.interceptors.request.use(config => {
-  // 设置以 form 表单的形式提交参数，如果以 JSON 的形式提交表单，可忽略
 
   console.log(localStorage.token)
 
   console.log('before send...')
-  // 下面会说在什么时候存储 token
+  // 加上 token
   if (localStorage.token) {
     config.headers.Authorization = 'Bearer ' + localStorage.token
   }
+  else {
+    //无token跳转
+    this.$router.push({path:'/MTlogin'})
+  }
+
   return config
 
 },error =>{
@@ -37,14 +41,6 @@ Axios.interceptors.response.use(res =>{
   if(res.status!=200){
     alert(res.error_msg)
     return Promise.reject(res)
-  }
-  else if (res.status==302){
-    if (localStorage.token){
-      this.$router.go(-1)
-    }
-    else {
-      this.$router.push({path:'/MTlogin'})
-    }
   }
   return res
 }, error => {

@@ -27,7 +27,7 @@ router.beforeEach((to, from, next) => {
   if (to.path === "/accountAndSettings/MTfindPassword") {
     next();
   } else {
-    if (localStorage.token !== '') {
+    if (localStorage.token !== ''&&localStorage!=null ) {
       console.log("检查令牌通过");
       axios.defaults.headers['Authorization'] = localStorage.getItem('token')
       next();

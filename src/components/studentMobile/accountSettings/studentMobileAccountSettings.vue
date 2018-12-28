@@ -75,7 +75,7 @@
           return{
             user:'',
             adminEmail:'',
-            getUserUrl:'/user/information'
+            getUserUrl:'/user/information/'
           }
       },
       created(){
