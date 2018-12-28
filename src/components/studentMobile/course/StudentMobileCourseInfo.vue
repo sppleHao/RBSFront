@@ -70,18 +70,18 @@
         </div>
 
 
-        <div class="require">
+        <div class="require" v-if="course.memberLimitStrategy">
           <div class="require-title">
             小组总人数（含组长）：
           </div>
           <div class="require-content">
-            <div>
+            <div style="font-size: 2.5vmax">
               {{course.memberLimitStrategy.minMember}} - {{course.memberLimitStrategy.maxMember}}
             </div>
           </div>
         </div>
 
-        <div class="require">
+        <div class="require" v-if="course.courseMemberLimitStrategyVOS">
           <div class="require-title">
             组内选修课程人数：
           </div>
@@ -103,8 +103,11 @@
             选修课人数要求：
           </div>
           <div class="require-content">
-            <div>
-              <!--{{course.courseMemberLimitStrategy.requireRule}}-->
+            <div v-if="course.courseMemberLimitStrategyStyle" style="font-size: 2.5vmax">
+                均满足
+            </div>
+            <div v-else style="font-size: 2.5vmax">
+                满足其一
             </div>
           </div>
         </div>
