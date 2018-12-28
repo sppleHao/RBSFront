@@ -3,7 +3,7 @@
     <div class="header">
       <student-mobile-header :title="title"></student-mobile-header>
     </div>
-    <div class="main">
+    <div class="main"v-if="course">
       <div class="base-require">
         <div class="base-require-title">
           组员基本要求:
@@ -17,7 +17,7 @@
         </div>
         <div class="require-content">
           <div>
-            {{course.courseMemberLimitStrategy.minMember}} - {{course.courseMemberLimitStrategy.maxMember}}
+            {{course.memberLimitStrategy.minMember}} - {{course.memberLimitStrategy.maxMember}}
           </div>
         </div>
       </div>
@@ -25,6 +25,16 @@
       <div class="require">
         <div class="require-title">
           组内选修课程人数：
+        </div>
+        <div class="require-content">
+          <div v-for="st in course.courseMemberLimitStrategyVOS">
+            <span style="font-size: 2vmax">
+              {{st.courseName}}
+            </span>
+            <span style="font-size: 2vmax;margin-left: 3vmax">
+              {{st.minMember}}-{{st.maxMember}}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -35,7 +45,7 @@
         </div>
         <div class="require-content">
           <div>
-            {{course.courseMemberLimitStrategy.requireRule}}
+            <!--{{course.courseMemberLimitStrategy.requireRule}}-->
           </div>
         </div>
       </div>
@@ -51,10 +61,12 @@
 
       <div class="conflict">
         <div class="conflict-title">冲突课程</div>
-      </div>
-      <div class="conflict-content">
-        <div v-for="conflictCourseId in course.conflictCourses">
-          {{conflictCourseId}}
+        <div class="conflict-content">
+          <div v-for="conflictCoursePair in course.conflictCourses" style="display: flex;margin-bottom: 3vmax;margin-top: 1vmax">
+            <div style="margin-left: 3vmax;width: 5vmax;text-align: center" v-for="conflictCourse in conflictCoursePair">
+             {{conflictCourse.name}}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -69,19 +81,7 @@
     data(){
       return{
         title:this.$route.query.courseName,
-        course:{
-          id:'',
-          name:'',
-          presentationPercentage:'',
-          questionPercentage:'',
-          reportPercentage:'',
-          teamStartTime:'',
-          teamEndTime:'',
-          courseMemberLimitStrategy:'',
-          conflictCourses:'',
-          shareSeminar:'',
-          shareTeam:''
-        }
+        course:''
       }
     },
     created(){
@@ -91,7 +91,16 @@
       getCourseInfo:function(url,params){
         this.$http.get(url,params)
           .then(res=>{
-            this.course = res.data
+
+            let datas = res.data
+
+            let course ={
+              conflictCourses:datas.conflictCourses,
+              memberLimitStrategy:datas.memberLimitStrategy,
+              courseMemberLimitStrategyVOS:datas.courseMemberLimitStrategyVOS,
+            }
+
+            this.course = course
           })
       }
     }
@@ -144,15 +153,13 @@
     margin:  1%;
   }
   .require-title{
-    width: 80%;
+    width: 60%;
     margin-left: 2%;
     font-family:思源黑体;
     font-size:2.5vmax;
   }
   .require-content{
-    position: absolute;
-    margin-top: 1vmax;
-    right: 2vmax;
+    width: 40%;
     font-family:思源黑体;
     font-size:2vmax;
   }
@@ -164,19 +171,19 @@
     color: darkgray;
   }
   .conflict{
+    height: 10%;
     display: flex;
     margin:  1%;
   }
   .conflict-title{
-    width: 80%;
+    width: 60%;
     margin-left: 2%;
     font-family:思源黑体;
     font-size:2.5vmax;
   }
   .conflict-content{
-    position: absolute;
-    margin-top: 1vmax;
-    margin-left: 6%;
+    width: 40%;
+    right: 2.3vmax;
     font-family:思源黑体;
     font-size:2vmax;
   }

@@ -31,6 +31,7 @@
           </div>
         </div>
       </div>
+
       <div class="time" title="组队开始时间" extra="2018.10.11 12:00">
           <span slot="default" class="time-title">
             组队开始时间
@@ -39,6 +40,7 @@
             {{course.teamStartTime}}
           </span>
       </div>
+
       <div class="time" title="组队截止时间" extra="2018.11.11 12:00">
           <span slot="default" class="time-title">
             组队截止时间
@@ -50,16 +52,82 @@
 
       <Divider/>
 
-      <router-link :to="{name:'StudentMobileCourseTeamLimit',query:{courseId:this.$route.query.courseId,courseName:this.$route.query.courseName}}">
-        <div class="limit">
-          <span class="limit-title">
-            组队要求
-          </span>
-          <span class="limit-content">
-            <img src="../../../assets/arrow.png" style="width: 2vmax;height: 2vmax">
-          </span>
+      <!--<router-link :to="{name:'StudentMobileCourseTeamLimit',query:{courseId:this.$route.query.courseId,courseName:this.$route.query.courseName}}">-->
+        <!--<div class="limit">-->
+          <!--<span class="limit-title">-->
+            <!--组队要求-->
+          <!--</span>-->
+          <!--<span class="limit-content">-->
+            <!--<img src="../../../assets/arrow.png" style="width: 2vmax;height: 2vmax">-->
+          <!--</span>-->
+        <!--</div>-->
+      <!--</router-link>-->
+
+        <div class="base-require">
+          <div class="base-require-title">
+            组队基本要求:
+          </div>
         </div>
-      </router-link>
+
+
+        <div class="require">
+          <div class="require-title">
+            小组总人数（含组长）：
+          </div>
+          <div class="require-content">
+            <div>
+              {{course.memberLimitStrategy.minMember}} - {{course.memberLimitStrategy.maxMember}}
+            </div>
+          </div>
+        </div>
+
+        <div class="require">
+          <div class="require-title">
+            组内选修课程人数：
+          </div>
+          <div class="require-content">
+            <div v-for="st in course.courseMemberLimitStrategyVOS">
+            <span style="font-size: 2vmax">
+              {{st.courseName}}
+            </span>
+              <span style="font-size: 2vmax;margin-left: 3vmax">
+              {{st.minMember}}-{{st.maxMember}}
+            </span>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="require">
+          <div class="require-title">
+            选修课人数要求：
+          </div>
+          <div class="require-content">
+            <div>
+              <!--{{course.courseMemberLimitStrategy.requireRule}}-->
+            </div>
+          </div>
+        </div>
+
+        <div class="comment">
+        <span>
+          均满足指选课人数达到需求
+          满足其一指任意选课人数满足即可（多指冲突课程)
+        </span>
+        </div>
+
+        <Divider />
+
+        <div class="conflict">
+          <div class="conflict-title">冲突课程</div>
+          <div class="conflict-content">
+            <div v-for="conflictCoursePair in course.conflictCourses" style="display: flex;margin-bottom: 3vmax;margin-top: 1vmax">
+              <div style="margin-left: 3vmax;width: 5vmax;text-align: center" v-for="conflictCourse in conflictCoursePair">
+                {{conflictCourse.name}}
+              </div>
+            </div>
+          </div>
+        </div>
 
 
     </div>
@@ -109,7 +177,7 @@
     text-align: center;
     background: #f8f8f8;
     width:100%;
-    height: 8%;
+    height: 6%;
     border:1px solid transparent;
     font-family:思源黑体;
     font-size: 2.5vmax;
@@ -122,19 +190,19 @@
     justify-content: center;
   }
   .root {
-    height: 100%;
+    height: 130%;
     width: 100%;
     background: #f2f2f2;
   }
   .main{
     /*margin-top: 8%;*/
-    height: 89%;
+    height: 92%;
     width: 96%;
     margin: 2%;
     background-color: white;
   }
   .intro{
-    height: 20%;
+    height: 12%;
     padding-top: 2%;
     display: block;
     margin:  1%;
@@ -151,7 +219,7 @@
     font-size:2vmax;
   }
   .score{
-    height: 20%;
+    height: 10%;
     display: flex;
     padding-bottom: 6%;
     margin:  1%;
@@ -182,7 +250,7 @@
     font-size:2vmax;
   }
   .time{
-    height: 7%;
+    height: 5%;
     display: flex;
     margin:  1%;
   }
@@ -204,5 +272,56 @@
     height: 7%;
     display: flex;
     margin-top: 3%;
+  }
+  .base-require{
+    height: 6vmax;
+    padding-top: 2%;
+    display: block;
+    margin:  1%;
+  }
+  .base-require-title{
+    font-family:思源黑体;
+    font-size:3vmax;
+    margin-left: 2%;
+  }
+  .require{
+    height: 6.5%;
+    display: flex;
+    margin:  1%;
+  }
+  .require-title{
+    width: 60%;
+    margin-left: 2%;
+    font-family:思源黑体;
+    font-size:2.5vmax;
+  }
+  .require-content{
+    width: 40%;
+    font-family:思源黑体;
+    font-size:2vmax;
+  }
+  .comment{
+    width: 80%;
+    margin-left: 10%;
+    font-family:思源黑体;
+    font-size:2vmax;
+    color: darkgray;
+  }
+  .conflict{
+    height: 6.5%;
+    display: flex;
+    margin:  1%;
+  }
+  .conflict-title{
+    width: 60%;
+    margin-left: 2%;
+    font-family:思源黑体;
+    font-size:2.5vmax;
+  }
+  .conflict-content{
+    width: 40%;
+    right: 2.3vmax;
+    font-family:思源黑体;
+    font-size:2vmax;
   }
 </style>
