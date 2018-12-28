@@ -64,7 +64,7 @@
       </div>
 
 
-    <div v-if="isAfterDDL" class="footer">
+    <div v-if="isAfterDDL&&isMainCourse" class="footer">
       <Button class="button" v-if="!myTeam" type="success" long @click="enterTeamCreating" style="background-color:#96c864">创建小组</Button>
       <Button class="button" v-else type="success" long @click="enterMyTeam" style="background-color:#96c864">我的小组({{myTeam.teamNumber}})</Button>
     </div>
@@ -116,6 +116,7 @@
             getTeamInfoUrl:'team/',
             getNTStudentsUrl:`course/${this.$route.query.courseId}/team/free`,
             showNT:false,
+            isMainCourse:false,
           }
       },
       created(){
@@ -144,6 +145,15 @@
           this.$http.get(url,params)
             .then(res=>{
               let teamEndTime = res.data.teamEndTime
+
+              let teamMainCourseId = res.data.teamMainCourseId
+
+              if (teamMainCourseId===0){
+                this.isMainCourse=true
+              }
+              else {
+                this.isMainCourse=false
+              }
 
               if ((Date.parse(teamEndTime)-Date.parse(nowTime))<0){
                 this.isAfterDDL = false
