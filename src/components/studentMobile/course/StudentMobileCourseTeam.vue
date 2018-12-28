@@ -162,9 +162,6 @@
                 this.isAfterDDL = true
               }
 
-              //todo test
-              this.isAfterDDL =true
-
             })
         },
         getMyTeam:function(url,params){

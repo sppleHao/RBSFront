@@ -175,7 +175,6 @@
         }
       },
       methods:{
-        //todo 判断组长
         getMyTeam:function(url,params){
 
           this.$http.get(url,{params})
@@ -188,6 +187,8 @@
                 account:datas.leader.account,
                 userName:datas.leader.name
               }
+
+              this.isLeader = datas.isLeader
 
 
               let teamMembers = []
