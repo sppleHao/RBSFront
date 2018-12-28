@@ -13,13 +13,14 @@
       <down-menu></down-menu>
       <div class="man"><img style="width:80%" src="../../../assets/man.png"></div>
       <div class="entry">
-        <div class="entry-div" @click="enterSetting(this.$data.id)">
+        <div class="entry-div" @click="enterSetting(id)">
+
           <div>
             <img style="width:50%" src="../../../assets/personal.png"/>
           </div>
           <div class="entry-font-div">账户与设置</div>
         </div>
-        <div class="entry-div" @click="enterCourse(this.$data.id)">
+        <div class="entry-div" @click="enterCourse(id)">
           <div>
             <img style="width:50%" src="../../../assets/seminar.png"/>
           </div>
@@ -35,7 +36,7 @@
         name: "profile",
       data() {
         return {
-          id:'1',
+          id:localStorage.getItem("token"),
         }
       },
       methods:{
@@ -47,13 +48,13 @@
         },
         enterCourse:function(id){
           this.$router.push({
-            name:'',
+            name:'teacherMobileCourse',
             params:{id}
           })
         },
         enterSetting:function(id){
           this.$router.push({
-            name:'',
+            name:'teacherMobileAccountSettings',
             params:{id}
           })
         }

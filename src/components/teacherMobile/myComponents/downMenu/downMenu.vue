@@ -2,10 +2,10 @@
   <div id="show" class="box1">
     <em class="box2"></em>
     <em class="box3"></em>
-    <div class="item1">
-      <img src="../../../../assets/news.png" class="img" @click="enterUpcomings(id)"/>待办</div>
-    <div class="item1">
-      <img src="../../../../assets/personal data.png" class="img" @click="enterPersonal(id)"/>个人页</div>
+    <div class="item1"  @click="enterUpcomings(id)">
+      <img src="../../../../assets/news.png" class="img"/>待办</div>
+    <div class="item1"  @click="enterPersonal(id)">
+      <img src="../../../../assets/personal data.png" class="img"/>个人页</div>
     <div class="item2" @click="enterSeminar(id)">
       <img src="../../../../assets/Trophy.png" class="img"/>讨论课</div>
   </div>
@@ -16,15 +16,21 @@
       name: "downMenu",
       data() {
         return {
-          id: '24320162202918'
+          id: localStorage.getItem("token")
         }
       },
       methods: {
         enterUpcomings: function (id) {
-
+          this.$router.push({
+            name:'teacherMobileUpcomings',
+            params:{id}
+          })
         },
         enterPersonal: function (id) {
-
+          this.$router.push({
+            name: 'teacherMobileProfile',
+            params: {id}
+          })
         },
         enterSeminar: function (id) {
           this.$router.push({
@@ -45,7 +51,8 @@
     width: 30%;
     height: 20%;
     border: 1px solid #D3CFD4;
-    display: none
+    display: none;
+    z-index:9999;
   }
   .box2 {
     display: block;
@@ -54,7 +61,8 @@
     bottom: 100%;
     left: 75%;
     border-style: solid;
-    border-color: transparent transparent #D3CFD4
+    border-color: transparent transparent #D3CFD4;
+    z-index:9999;
   }
   .box3 {
     display: block;
@@ -63,7 +71,8 @@
     bottom: 99%;
     left: 76%;
     border-style: solid;
-    border-color: transparent transparent #fff
+    border-color: transparent transparent #fff;
+    z-index:9999;
   }
   .item1 {
     font-family: 思源黑体;

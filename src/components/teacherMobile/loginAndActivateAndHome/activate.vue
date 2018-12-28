@@ -7,15 +7,15 @@
     </div>
     <div class="main">
       <div class="input-div">
-        <input class="input" type="text" v-model="newPassword" placeholder="输入密码"/>
+        <input class="input" type="password" v-model="newPassword" placeholder="输入密码"/>
       </div>
       <div class="input-div">
         <input class="input" id="password" type="password" v-model="againPassword" placeholder="确认密码"/>
       </div>
       <!--<div class="email">发送验证码到邮箱:{{email}}</div>-->
       <!--<div class="input-div2">-->
-      <!--<input class="input2" id="captcha" type="password" v-model="captcha" placeholder="验证码"/>-->
-      <!--<Button type="error" class="captchaButton" ghost @click="sendCaptcha">发送验证码</Button>-->
+        <!--<input class="input2" id="captcha" type="password" v-model="captcha" placeholder="验证码"/>-->
+        <!--<Button type="error" class="captchaButton" ghost @click="sendCaptcha">发送验证码</Button>-->
       <!--</div>-->
       <div class="text">可包含数字、字母、下划线，长度不小于六位</div>
       <button class="button" @click="activate">确认提交</button>
@@ -24,62 +24,62 @@
 </template>
 
 <script>
-  export default {
-    name: "activate",
-    data() {
-      return {
-        newPassword: '',
-        againPassword: '',
-        id: localStorage.getItem("token"),
-      }
-    },
-    methods: {
-      activate: function () {
-        let _this = this;
-        if (_this.$data.newPassword === '') {
-          this.$message({
-            message: '密码不能为空！',
-            type: 'error'
-          })
-        } else {
-          if (_this.$data.newPassword !== _this.$data.againPassword) {
-            this.$message({
-              message: '两次输入的密码不一致,请检查',
+    export default {
+      name: "activate",
+      data() {
+        return {
+          newPassword: '',
+          againPassword: '',
+          id: localStorage.getItem("token"),
+        }
+      },
+      methods: {
+        activate: function () {
+          let _this = this;
+          if (_this.$data.newPassword === '') {
+            _this.$message({
+              message: '密码不能为空！',
               type: 'error'
             })
           } else {
-            this.$axios({
-              method: 'put',
-              url: '/teacher/active',
-              data: {
-                password:this.$data.newPassword,
-              },
-              headers: {
-                'Authorization': 'Bearer ' + this.$data.id
-              }
-            }).then(function (response) {
-              this.$message({
-                message:'激活成功!',
-                type:'success'
+            if (_this.$data.newPassword !== _this.$data.againPassword) {
+              _this.$message({
+                message: '两次输入的密码不一致,请检查',
+                type: 'error'
               })
-              this.enter(this.$data.id);
-            }).catch(function(error){
-              this.$message({
-                message:'激活失败，请重试!',
-                type:'error'
+            } else {
+              this.$axios({
+                method: 'put',
+                url: '/teacher/active',
+                data: {
+                  password:_this.$data.newPassword,
+                },
+                headers: {
+                  'Authorization': 'Bearer ' + _this.$data.id
+                }
+              }).then(function (response) {
+                _this.$message({
+                  message:'激活成功!',
+                  type:'success'
+                })
+                _this.enter(_this.$data.id);
+              }).catch(function(error){
+                _this.$message({
+                  message:'激活失败，请重试!',
+                  type:'error'
+                })
               })
-            })
+            }
           }
+        },
+        enter:function(id){
+          this.$router.push({
+            name:'teacherMobileProfile',
+            params:{id}
+          })
         }
-      },
-      enter:function(id){
-        this.$router.push({
-          name:'teacherMobileProfile',
-          params:{id}
-        })
       }
     }
-  }
 </script>
 
 <style scoped>

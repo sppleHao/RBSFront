@@ -1,16 +1,34 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
 import teacherPCLogin from '@/components/teacherPC/login'
-
 import teacherMobileLogin from '@/components/teacherMobile/loginAndActivateAndHome/login'
 import teacherMobileFindPassword from '@/components/teacherMobile/accountAndSettings/findPassword'
-import teacherMobileProcessingSeminarHome from '@/components/teacherMobile/seminar/processingSeminarHome'
+import teacherMobileSpecificSeminarHome from '@/components/teacherMobile/seminar/specificSeminarHome'
 import teacherMobilePauseSeminar from '@/components/teacherMobile/seminar/pauseSeminar'
 import teacherMobileProcessingSeminar from '@/components/teacherMobile/seminar/processingSeminar'
 import teacherMobileProfile from '@/components/teacherMobile/loginAndActivateAndHome/profile'
 import teacherMobileSeminar from '@/components/teacherMobile/seminar/seminar'
-import teacherMobileSeminarEnd from '@/components/teacherMobile/seminar/endSeminar'
+import teacherMobileSeminarScore from '@/components/teacherMobile/seminar/seminarScore'
+import teacherMobileActivate from '@/components/teacherMobile/loginAndActivateAndHome/activate'
+import teacherMobileSetPassword from '@/components/teacherMobile/accountAndSettings/setPassword'
+import teacherMobileUpcomings from '@/components/teacherMobile/upcomings/upcomings'
+import teacherMobileSettings from '@/components/teacherMobile/accountAndSettings/accountSettings'
+import teacherMobileAlterEmail from '@/components/teacherMobile/accountAndSettings/alterEmail'
+import teacherMobileAlterPassword from '@/components/teacherMobile/accountAndSettings/alterPassword'
+import teacherMobileCourse from '@/components/teacherMobile/myCourse/course'
+import teacherMobileCreateCourse from '@/components/teacherMobile/createCourse/createCourse'
+import teacherMobileClassInfo from '@/components/teacherMobile/myCourse/classInfo'
+import teacherMobileCourseInfo from '@/components/teacherMobile/myCourse/courseInfo'
+import teacherMobileShareSettings from '@/components/teacherMobile/myCourse/shareSettings'
+import teacherMobileStudentScore from '@/components/teacherMobile/myCourse/studentScore'
+import teacherMobileStudentTeam from '@/components/teacherMobile/myCourse/studentTeam'
+import teacherMobileCreateShare from '@/components/teacherMobile/myCourse/createShare'
+import teacherMobileCreateClass from '@/components/teacherMobile/myCourse/createClass'
+import teacherMobileSpecificSeminar from '@/components/teacherMobile/seminar/specificSeminar'
+import teacherMobileSeminarReport from '@/components/teacherMobile/seminar/seminarReport'
+import teacherMobileSeminarRoundSettings from '@/components/teacherMobile/seminar/seminarRoundSettings'
+import teacherMobileCreateSeminar from '@/components/teacherMobile/seminar/createSeminar'
+import teacherMobileAlterSeminar from '@/components/teacherMobile/seminar/alterSeminar'
 
 import StudentMobileAccountIndex from '@/components/studentMobile/accountSettings/StudentMobileAccountIndex'
 import StudentMobileAccountSettings from '@/components/studentMobile/accountSettings/StudentMobileAccountSettings'
@@ -33,14 +51,27 @@ Vue.use(Router)
 
 export default new Router({
   mode:'history',
+  base:'/dist/',
   routes: [
     //PC端路由
     //教师端
+    {
+      path: '/',
+      redirect: '/MTlogin',//设置默认指向的路径
+      name: 'teacherMobileLogin'
+    },
+
     {
       //登陆
       path: '/MTlogin',
       name: 'teacherMobileLogin',
       component: teacherMobileLogin
+    },
+    {
+      //激活
+      path:'/MTactivate',
+      name:'teacherMobileActivate',
+      component:teacherMobileActivate
     },
     {
       //找回密码
@@ -49,42 +80,149 @@ export default new Router({
       component: teacherMobileFindPassword
     },
     {
-      //进行中讨论课首页
-      path: '/seminar/MTprocessingSeminarHome/:id',
-      name: 'teacherMobileProcessingSeminarHome',
-      component: teacherMobileProcessingSeminarHome
+      //账户设置
+      path:'/accountAndSettings/MTaccountSettings',
+      name:'teacherMobileAccountSettings',
+      component:teacherMobileSettings
     },
     {
-      //暂停讨论课
-      path: '/seminar/MTpauseSeminar',
-      name: 'teacherMobilePauseSeminar',
-      component: teacherMobilePauseSeminar
+      //修改密码
+      path:'/accountSettings/MTalterPassword',
+      name:'teacherMobileAlterPassword',
+      component:teacherMobileAlterPassword
     },
+    {
+      //修改邮箱
+      path:'/accountSettings/MTalterEmail',
+      name:'teacherMobileAlterEmail',
+      component:teacherMobileAlterEmail
+    },
+    {
+      //课程管理
+      path:'/myCourse/MTcourse',
+      name:'teacherMobileCourse',
+      component:teacherMobileCourse
+    },
+    {
+      //班级信息
+      path:'/myCourse/MTclassInfo/:name/:courseNumber',
+      name:'teacherMobileClassInfo',
+      component:teacherMobileClassInfo
+    },
+    {
+      //新建班级
+      path:'/myCourse/MTcreateClass/:name/:courseNumber',
+      name:'teacherMobileCreateClass',
+      component:teacherMobileCreateClass
+    },
+    {
+      //课程信息
+      path:'/myCourse/MTcourseInfo/:name/:courseNumber',
+      name:'teacherMobileCourseInfo',
+      component:teacherMobileCourseInfo
+    },
+    {
+      //共享设置
+      path:'/myCourse/MTshareSettings/:name/:courseNumber',
+      name:'teacherMobileShareSettings',
+      component:teacherMobileShareSettings
+    },
+    {
+      //讨论课轮次设置
+      path:'/seminar/MTseminarRoundSettings/:name/:courseNumber/:round/:roundId',
+      name:'teacherMobileSeminarRoundSettings',
+      component:teacherMobileSeminarRoundSettings
+    },
+    {
+      //新增共享
+      path:'/myCourse/MTcreateShare/:name/courseNumber',
+      name:'teacherMobileCreateShare',
+      component:teacherMobileCreateShare
+    },
+    {
+      //学生成绩
+      path:'/myCourse/MTstudentScore/:name/:courseNumber',
+      name:'teacherMobileStudentScore',
+      component:teacherMobileStudentScore
+    },
+    {
+      //学生组队
+      path:'/myCourse/MTstudentTeam/:name/:courseNumber',
+      name:'teacherMobileStudentTeam',
+      component:teacherMobileStudentTeam
+    },
+    {
+      //新建课程
+      path:'/createCourse/MTcreateCourse',
+      name:'teacherMobileCreateCourse',
+      component:teacherMobileCreateCourse
+    },
+    {
+      //待办事项
+      path:'/upcomings/MTupcomings',
+      name:'teacherMobileUpcomings',
+      component:teacherMobileUpcomings
+    },
+    {
+      //某个讨论课
+      path:'/seminar/MTspecificSeminar/:name/:courseNumber',
+      name:'teacherMobileSpecificSeminar',
+      component:teacherMobileSpecificSeminar
+    },
+    {
+      //某个讨论课首页
+      path: '/seminar/MTspecificSeminarHome/:name/:courseNumber/:seminar/:seminarNumber/:class/:classNumber',
+      name: 'teacherMobileSpecificSeminarHome',
+      component: teacherMobileSpecificSeminarHome
+    },
+    // {
+    //   //暂停讨论课
+    //   path: '/seminar/MTpauseSeminar',
+    //   name: 'teacherMobilePauseSeminar',
+    //   component: teacherMobilePauseSeminar
+    // },
     {
       //讨论课进行中
-      path: '/seminar/MTprocessingSeminar/:id',
+      path: '/seminar/MTprocessingSeminar/:name/:courseNumber/:seminar/:seminarNumber/:class/:classNumber',
       name: 'teacherMobileProcessingSeminar',
       component: teacherMobileProcessingSeminar
     },
     {
       //个人首页
-      path: '/users/MTprofile/:name',
+      path: '/users/MTprofile',
       name: 'teacherMobileProfile',
       component: teacherMobileProfile
     },
     {
       //讨论课首页
-      path:'/seminar/MTseminarHome/:id',
+      path:'/seminar/MTseminarHome',
       name:'teacherMobileSeminar',
       component:teacherMobileSeminar
     },
     {
-      //讨论课结束
-      path:'/seminar/MTendSeminar/:id',
-      name:'teacherMobileSeminarEnd',
-      component:teacherMobileSeminarEnd
+      //讨论课查看成绩
+      path:'/seminar/MTseminarScore/:name/:courseNumber/:seminar/:seminarNumber/:class/:classNumber',
+      name:'teacherMobileSeminarScore',
+      component:teacherMobileSeminarScore
     },
-    //学生端
+    {
+      //讨论课报告
+      path:'/seminar/MTseminarReport/:name/:courseNumber/:seminar/:seminarNumber/:class/:classNumber',
+      name:'teacherMobileSeminarReport',
+      component:teacherMobileSeminarReport
+    },
+    {
+      //新建讨论课
+      path:'/seminar/MTcreateSeminar/:name/:courseNumber',
+      name:'teacherMobileCreateSeminar',
+      component:teacherMobileCreateSeminar
+    },
+    {
+      //修改讨论课
+      path:'/seminar/MTalterSeminar/:name/:courseNumber/:seminar/:seminarNumber',
+      name:'teacherMobileAlterSeminar',
+      component:teacherMobileAlterSeminar
+    },
 
     {
       //账户首页

@@ -15,6 +15,7 @@
       <div class="gray-div">
         <span class="span1">课程情况：</span>
         <span class="P-span2">暂停</span>
+
       </div>
       <button class="button" onclick="window.location.href='../../seminar/MTprocessingSeminar/1'"><span>继续讨论课</span></button>
     </div>
