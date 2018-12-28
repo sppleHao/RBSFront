@@ -10,7 +10,7 @@ export const Axios = axios.create({
 
 // 在发送请求之前做某件事
 Axios.interceptors.request.use(config => {
-  
+
   console.log('before send...')
   // 加上 token
   if (localStorage.token) {

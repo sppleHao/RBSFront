@@ -98,7 +98,6 @@
             </span>
             <span class="no-upload" v-else slot="extra">
               未提交
-              截止日期{{seminar.reportDDL}}
             </span>
           </Cell>
 
@@ -139,19 +138,39 @@
       </Modal>
     </div>
     <div class="footer" v-if="myTeamPresentation.isTeamSignUp">
-      <Button class="button" v-if="seminar.seminarState=='正在进行'" style="background-color: #EA4C4C;color: #FFFFFF;"  @click="enterSeminarPresenting">进入讨论课</Button>
-      <Button class="button" v-if="seminar.seminarState!='已完成'" style="background-color: #F8F8F8 ;color:#96C864; border:#AAC882 1px solid; " @click="showModal('ppt')">提交PPT</Button>
-      <Button class="button" v-if="seminar.seminarState=='已完成'" style="background-color: #F8F8F8 ;color:#96C864; border:#AAC882 1px solid; "  @click="showModal('report')">书面报告提交</Button>
+      <Button class="button-large" v-if="seminar.seminarState=='正在进行'" style="background-color: #EA4C4C;color: #FFFFFF;"  @click="enterSeminarPresenting">进入讨论课</Button>
+      <Button class="button-large" v-if="seminar.seminarState!='已完成'" style="background-color: #F8F8F8 ;color:#96C864; border:#AAC882 1px solid; " @click="showModal('ppt')">提交PPT</Button>
+      <Button class="button-large" v-if="seminar.seminarState=='已完成'&&!isAfterReportDDL" style="background-color: #F8F8F8 ;color:#96C864; border:#AAC882 1px solid; "  @click="showModal('report')">书面报告提交</Button>
+      <button class="button-large" v-if="seminar.seminarState=='已完成'&&isAfterReportDDL"  style="background-color:#96C864; border:#AAC882 1px solid;" @click="enterSeminarScore">查看成绩</button>
     </div>
     <div class="footer" v-else>
-      <Button class="button" v-if="seminar.seminarState=='未开始'" style="background-color: #96C864;color: #FFFFFF;"  @click="enterSeminarSignUp">报名</Button>
-      <Button class="button" v-if="seminar.seminarState=='正在进行'" style="background-color: #EA4C4C;color: #FFFFFF;"  @click="enterSeminarPresenting">进入讨论课</Button>
+      <Button class="button-large" v-if="seminar.seminarState=='未开始'" style="background-color: #96C864;color: #FFFFFF;"  @click="enterSeminarSignUp">报名</Button>
+      <Button class="button-large" v-if="seminar.seminarState=='正在进行'" style="background-color: #EA4C4C;color: #FFFFFF;"  @click="enterSeminarPresenting">进入讨论课</Button>
     </div>
   </div>
 </template>
 
 <script>
     import StudentMobileHeader from "../common/StudentMobileHeader";
+    Date.prototype.Format = function(fmt)
+    { //author: meizz
+      var o = {
+        "M+" : this.getMonth()+1,                 //月份
+        "d+" : this.getDate(),                    //日
+        "h+" : this.getHours(),                   //小时
+        "m+" : this.getMinutes(),                 //分
+        "s+" : this.getSeconds(),                 //秒
+        "q+" : Math.floor((this.getMonth()+3)/3), //季度
+        "S"  : this.getMilliseconds()             //毫秒
+      };
+      if(/(y+)/.test(fmt))
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+      for(var k in o)
+        if(new RegExp("("+ k +")").test(fmt))
+          fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+      return fmt;
+    }
+
     export default {
       name: "StudentMobileSeminarInfoIndex",
       components: {StudentMobileHeader},
@@ -175,6 +194,7 @@
           getMyTeamUrl:`course/${this.$route.query.courseId}/team/mine`,
           getSeminarUrl:`seminar/${this.$route.query.seminarId}/class/`,
           getTeamSignUpStateUrl:`attendance`,
+          isAfterReportDDL:true,
         }
       },
       created() {
@@ -250,11 +270,10 @@
                 seminarTopic:datas.seminarTopic,
                 seminarOrder:datas.seminarSerial,
                 seminarIntro:datas.seminarIntro,
-                // seminarState:"正在进行",
                 seminarState:seminarState,
                 signUpStartTime:datas.enrollStartTime,
                 signUpEndTime:datas.enrollEndTime,
-                maxTeam:6,//datas.maxTeam,
+                maxTeam:datas.maxTeam,
                 reportDDL:''
               }
 
@@ -285,6 +304,7 @@
                     this.myTeamPresentation.myTeamPreOrder = presentation.teamOrder
                     this.myTeamPresentation.attendanceId = presentation.id
                     this.seminar.reportDDL = presentation.reportDDL
+                    this.isAfterReportDDL = this.isAfterDDL(presentation.reportDDL)
                   }
               })
 
@@ -352,6 +372,19 @@
             }
           )
         },
+        enterSeminarScore:function(){
+          this.$router.push({
+            name:'StudentMobileSeminarScore',
+            query:{
+              courseName:this.$route.query.courseName,
+              seminarOrder:this.seminar.seminarOrder,
+              seminarIntro:this.seminar.seminarIntro,
+              className:this.team.class.className,
+              preOrder:this.myTeamPresentation.myTeamPreOrder,
+              seminarTopic:this.seminar.seminarTopic
+            }
+          })
+        },
         showModal(type){
           this.uploadFileType = type
 
@@ -397,6 +430,15 @@
             this.$Message.error('所选择的文件大小为0!')
           }
 
+        },
+        isAfterDDL(teamEndTime){
+            let nowTime = new Date().Format("yyyy/MM/dd hh:mm:ss")
+            if ((Date.parse(teamEndTime)-Date.parse(nowTime))<0){
+              return false
+            }
+            else {
+              return true
+            }
         }
       }
     }
@@ -426,7 +468,7 @@
   }
   .main{
     /*margin-top: 8%;*/
-    height: 90%;
+    height: 80%;
     width: 100%;
     background: #fff;
   }
@@ -455,8 +497,8 @@
   }
 
   .top-list div{
-    padding-top: 4%;
-    padding-bottom: 4%;
+    padding-top: 2%;
+    padding-bottom: 2%;
     height: 10%;
     display: flex;
     /*实现垂直居中*/
@@ -507,11 +549,22 @@
     display: flex;
   }
   .button{
+    font-family:思源黑体;
     display: inline-block;
     text-align: center;
     font-size: 2.5vmax;
     /*padding: 20px;*/
     height: 5vmax;
+    width: 100%;
+  }
+  .button-large{
+    font-family:思源黑体;
+    display: inline-block;
+    text-align: center;
+    font-size: 3vmax;
+    /*padding: 20px;*/
+    margin-top: 2%;
+    height: 80%;
     width: 100%;
   }
 </style>

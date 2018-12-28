@@ -46,6 +46,7 @@ import StudentMobileSeminarPPTDownload from '@/components/studentMobile/seminar/
 import StudentMobileSeminarPresenting from  '@/components/studentMobile/seminar/StudentMobileSeminarPresenting'
 import StudentMobileSeminarSignUp from '@/components/studentMobile/seminar/StudentMobileSeminarSignUp'
 import StudentMobileSeminarCancelSignUp from '@/components/studentMobile/seminar/StudentMobileSeminarCancelSignUp'
+import StudentMobileSeminarScore from  '@/components/studentMobile/seminar/StudentMobileSeminarScore'
 
 Vue.use(Router)
 
@@ -333,6 +334,13 @@ export default new Router({
       path:'/studentMobile/seminar/info/cancelSignUp',
       name:'StudentMobileSeminarCancelSignUp',
       component:StudentMobileSeminarCancelSignUp,
+      props:true
+    },
+    {
+      //讨论课取消报名
+      path:'/studentMobile/seminar/info/score',
+      name:'StudentMobileSeminarScore',
+      component:StudentMobileSeminarScore,
       props:true
     },
 

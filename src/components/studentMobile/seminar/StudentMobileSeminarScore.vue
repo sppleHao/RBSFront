@@ -5,12 +5,12 @@
         <student-mobile-header :title="title"></student-mobile-header>
       </div>
       <CellGroup class="top-list">
-        <Cell class="white" title="主题" :extra="seminar.seminarTopic">
+        <Cell class="white" title="主题" :extra="seminarTopic">
             <span class="span1" slot="default">
               主题
             </span>
           <span class="span1" slot="extra">
-              {{seminar.seminarTopic}}
+              {{seminarTopic}}
             </span>
         </Cell>
 
@@ -19,7 +19,7 @@
               课次序号
             </span>
           <span class="span1" slot="extra">
-              第{{seminar.seminarOrder}}次
+              第{{seminarOrder}}次
             </span>
         </Cell>
 
@@ -31,7 +31,7 @@
           </div>
           <div style="width: 70%;text-align: center;">
                 <span class="span2" slot="extra">
-                {{seminar.seminarIntro}}
+                {{seminarIntro}}
               </span>
           </div>
         </div>
@@ -40,13 +40,13 @@
 
       <CellGroup class="list">
 
-        <Cell v-if="myTeamPresentation.isTeamSignUp&&team.class">
+        <Cell>
                 <span class="span1" slot="default">
                   报名
                 </span>
           <span class="span2" slot="extra">
-                  {{this.team.class.className}}
-                  第{{myTeamPresentation.myTeamPreOrder}}组
+                  {{className}}
+                  第{{preOrder}}组
           </span>
         </Cell>
 
@@ -59,44 +59,13 @@
         </div>
 
         <div style="width:40%;display:block;justify-content: center;text-align: center">
-          <span class="span2">{{pre.teamNumber}}</span>
+          <span class="span2">5.0</span>
         </div>
 
         <div  style="width:30%;visibility: hidden;justify-content: center;text-align: center">
-          <span class="span1">第{{index+1}}组</span>
+          <span class="span1">分数</span>
         </div>
-
       </div>
-
-      <!--上传窗口-->
-      <Modal
-        v-model="uploadModal"
-        :title="modalTitle">
-        <div>
-          <Upload ref="upload"
-                  :before-upload="handleUpload"
-                  :action="`http://192.168.0.101:8000/attendance/${myTeamPresentation.attendanceId}/ppt`">
-            <Button icon="ios-cloud-upload-outline">选择文件</Button>
-          </Upload>
-          <div v-if="file !== null">
-            文件名: {{ file.name }}
-          </div>
-          <div v-else>
-            未选择任何文件
-          </div>
-        </div>
-        <Button slot="footer" type="success" @click="upload" :loading="loadingStatus">{{ loadingStatus ? '上传中' : '点击上传' }}
-        </Button>
-      </Modal>
-    </div>
-    <div class="footer" v-if="myTeamPresentation.isTeamSignUp">
-      <Button class="button" v-if="seminar.seminarState=='正在进行'" style="background-color: #EA4C4C;color: #FFFFFF;"  @click="enterSeminarPresenting">进入讨论课</Button>
-      <Button class="button" v-if="seminar.seminarState!='已完成'" style="background-color: #F8F8F8 ;color:#96C864; border:#AAC882 1px solid; " @click="showModal('ppt')">提交PPT</Button>
-      <Button class="button" v-if="seminar.seminarState=='已完成'" style="background-color: #F8F8F8 ;color:#96C864; border:#AAC882 1px solid; "  @click="showModal('report')">书面报告提交</Button>
-    </div>
-    <div class="footer" v-else>
-      <Button class="button" v-if="seminar.seminarState=='未开始'" style="background-color: #96C864;color: #FFFFFF;"  @click="enterSeminarSignUp">报名</Button>
-      <Button class="button" v-if="seminar.seminarState=='正在进行'" style="background-color: #EA4C4C;color: #FFFFFF;"  @click="enterSeminarPresenting">进入讨论课</Button>
     </div>
   </div>
 </template>
@@ -108,240 +77,28 @@
     components: {StudentMobileHeader},
     data () {
       return {
-        modalTitle:'',
-        uploadModal: false,
-        file: null,
-        loadingStatus: false,
         title:this.$route.query.courseName+'-'+"讨论课",
-        team:'',
-        seminar:'',
-        uploadFileType:'',
-        myTeamPresentation:{
-          isTeamSignUp:false,
-          myTeamPreOrder:'',
-          pptName:'',
-          reportName:'',
-          attendanceId:'',
-        },
-        getMyTeamUrl:`course/${this.$route.query.courseId}/team/mine`,
-        getSeminarUrl:`seminar/${this.$route.query.seminarId}/class/`,
-        getTeamSignUpStateUrl:`attendance`,
+        courseName:this.$route.query.courseName,
+        seminarOrder:this.$route.query.seminarOrder,
+        seminarIntro:this.$route.query.seminarIntro,
+        className:this.$route.query.className,
+        preOrder:this.$route.query.preOrder,
+        seminarTopic:this.$route.query.seminarTopic,
+        getMyTeamUrl:``
       }
     },
     created() {
-      this.getMyTeam(this.getMyTeamUrl,{})
+      this.getTeamScore(this.getMyTeamUrl,{})
     },
     methods:{
-      //todo 没组队不能访问
-      getMyTeam:async function(url,params){
-        await this.$http.get(url,{params})
+      getTeamScore(url,params){
+        this.$http.get()
           .then(res=>{
 
-            let datas = res.data
-
-            let cClass = {
-              classId:datas.class.id,
-              className:datas.class.name
-            }
-
-            let teamLeader = {
-              studentId:datas.leader.id,
-              account:datas.leader.account,
-              userName:datas.leader.name
-            }
-
-
-            let teamMembers = []
-
-            datas.members.forEach(member=>{
-              let teamMember = {
-                studentId:member.id,
-                account:member.account,
-                userName:member.name
-              }
-              teamMembers.push(teamMember)
+          })
+            .catch(err=>{
+              console.log(err)
             })
-
-            let team = {
-              teamNumber:datas.teamInfo.teamSerials,
-              teamName:datas.teamInfo.teamName,
-              teamId:datas.teamInfo.id,
-              teamState:'invalid',
-              teamLeader:teamLeader,
-              teamMembers:teamMembers,
-              class:cClass,
-              teamState:'valid'
-            }
-
-
-            this.team = team
-          })
-          .catch((err)=>{
-            console.log(err)
-          })
-
-        this.getSeminar(this.getSeminarUrl+this.team.class.classId,{})
-      },
-      getSeminar:async function (url,params) {
-
-        await this.$http.get(url,{params:params})
-          .then((res)=>{
-
-            let datas = res.data
-
-            let seminarState =null
-
-            switch(datas.status){
-              case 0: seminarState='未开始';break
-              case 1: seminarState='正在进行';break
-              case 2: seminarState='已完成';break
-            }
-
-            let responseData = {
-              seminarId:datas.seminarId,
-              roundOrder:datas.roundSerial,
-              seminarTopic:datas.seminarTopic,
-              seminarOrder:datas.seminarSerial,
-              seminarIntro:datas.seminarIntro,
-              // seminarState:"正在进行",
-              seminarState:seminarState,
-              signUpStartTime:datas.enrollStartTime,
-              signUpEndTime:datas.enrollEndTime,
-              maxTeam:6,//datas.maxTeam,
-              reportDDL:''
-            }
-
-            this.seminar = responseData
-          })
-          .catch((err)=>{
-            console.log(err)
-          })
-
-        this.getTeamSignUpState(this.getTeamSignUpStateUrl,
-          {seminarId:this.seminar.seminarId,cClassId:this.team.class.classId})
-      },
-      //通过seminarId和classId查找所有的presentations，并筛选
-      getTeamSignUpState:function (url,params) {
-        this.$http.get(url,{params:params})
-          .then((res)=>{
-
-            let datas = res.data
-
-
-            datas.forEach(presentation=>{
-              let teamId = presentation.teamBaseInfoVO.id
-              //如果报名了
-              if (teamId==this.team.teamId){
-                this.myTeamPresentation.isTeamSignUp = true
-                this.myTeamPresentation.reportName = presentation.reportName
-                this.myTeamPresentation.pptName = presentation.pptName
-                this.myTeamPresentation.myTeamPreOrder = presentation.teamOrder
-                this.myTeamPresentation.attendanceId = presentation.id
-                this.seminar.reportDDL = presentation.reportDDL
-              }
-            })
-
-
-          })
-          .catch(err=>{
-
-          })
-      },
-      enterPPTDownLoad:function(){
-        this.$router.push({
-          name:'StudentMobileSeminarPPTDownload',
-          query:{
-            courseName:this.$route.query.courseName,
-            seminarId:this.seminar.seminarId,
-            seminarTopic:this.seminar.seminarTopic,
-            classId:this.team.class.classId,
-            teamId:this.team.teamId,
-            maxTeam:this.seminar.maxTeam
-          }
-        })
-      },
-      enterSeminarPresenting:function () {
-        this.$router.push(
-          {
-            name:'StudentMobileSeminarPresenting',
-            query:{
-              courseName:this.$route.query.courseName,
-              seminarId:this.seminar.seminarId,
-              seminarTopic:this.seminar.seminarTopic,
-              classId:this.team.class.classId,
-              teamId:this.team.teamId
-            }
-          }
-        )
-      },
-      enterSeminarSignUp:function(){
-        this.$router.push(
-          {
-            name:'StudentMobileSeminarSignUp',
-            query:{
-              courseName:this.$route.query.courseName,
-              seminarId:this.seminar.seminarId,
-              seminarTopic:this.seminar.seminarTopic,
-              classId:this.team.class.classId,
-              teamId:this.team.teamId,
-              maxTeam:this.seminar.maxTeam
-            }
-          }
-        )
-      },
-      enterSeminarModify:function(){
-        this.$router.push(
-          {
-            name:'StudentMobileSeminarCancelSignUp',
-            query:{
-              courseName:this.$route.query.courseName,
-              seminarId:this.seminar.seminarId,
-              seminarTopic:this.seminar.seminarTopic,
-              classId:this.team.class.classId,
-              teamId:this.team.teamId,
-              attendanceId:this.myTeamPresentation.attendanceId,
-              maxTeam:this.seminar.maxTeam
-            }
-          }
-        )
-      },
-      showModal(type){
-        this.uploadFileType = type
-
-        if (type=='ppt'){
-          this.modalTitle= 'PPT'
-        }
-        else if (type=='report') {
-          this.modalTitle= '书面报告'
-        }
-        this.uploadModal=true
-      },
-      handleUpload (file) {
-        this.file = file;
-        return false;
-      },
-      upload () {
-        this.loadingStatus = true;
-        let formData = new FormData()
-
-        formData.append('ppt',this.file)
-
-        console.log(this.file)
-
-        let config = {
-          headers:{'Content-Type':'multipart/form-data'}
-        };
-
-
-        this.$http.post(`/attendance/${this.myTeamPresentation.attendanceId}/${this.uploadFileType}`,formData,config)
-          .then(res=>{
-            this.file = null;
-            this.loadingStatus = false;
-            this.$Message.success('上传成功!')
-          })
-          .catch(err=>{
-            console.log(err)
-          })
       }
     }
   }
