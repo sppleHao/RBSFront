@@ -9,6 +9,9 @@
           <span style="text-align: center;font-size: 4vmax;color: green">
             {{team.teamNumber}}
             {{team.teamName}}
+            <span v-if="team.teamState=='valid'">{{valid}}</span>
+            <span v-if="team.teamState=='invalid'" style="color: red">{{invalid}}</span>
+            <span v-if="team.teamState=='apply'" style="color: orange">{{apply}}</span>
           </span>
         </div>
         <div v-if="team.teamLeader" class="team-cell">
@@ -82,14 +85,14 @@
         <Button class="button-three" type="error"  ghost @click="applyModal = true">提交审核</Button>
       </div>
       <div>
-        <Button class="button-three" type="error" @click="dissolveTeam">解散小组</Button>
+        <Button v-if="team.teamState!='apply'" class="button-three" type="error" @click="dissolveTeam">解散小组</Button>
       </div>
       <div>
-        <Button class="button-three" type="success" @click="invite">添加</Button>
+        <Button v-if="team.teamState!='apply'" class="button-three" type="success" @click="invite">添加</Button>
       </div>
     </div>
     <div v-else class="footer">
-      <button class="button-exit" type="error" @click="leaveTeam">退出小组</button>
+      <button v-if="team.teamState!='apply'" class="button-exit" type="error" @click="leaveTeam">退出小组</button>
     </div>
 
 
@@ -205,6 +208,8 @@
                   teamState='invalid';break
                 case 1:
                   teamState='valid';break
+                case 2:
+                  teamState='apply';break
               }
 
               let team = {
