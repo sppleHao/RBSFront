@@ -47,7 +47,8 @@ new Vue({
   el: '#app',
   router,
   created(){
-    baseURL: 'http://ncg4bc.natappfree.cc/'
+    // axios.defaults.baseURL='http://gscawv.natappfree.cc/'
+    axios.defaults.baseURL = 'http://119.29.24.35:8001'
   },
   components: { App },
   template: '<App/>'

@@ -48,7 +48,7 @@
       </div>
       <div class="main3">
         <button class="button3" @click="sendScore"><span>打分</span></button>
-        <button class="button1"><span>{{currentType==='1'?"抽取提问":"下个提问"}}</span></button>
+        <Button v-if="isConnect" class="button1"  @click="getAsk"><span>{{currentType==='1'?"抽取提问":"下个提问"}}</span></Button>
         <button class="button2" @click="nextShow"><span>下组展示</span></button>
       </div>
     </div>
@@ -104,39 +104,22 @@
         showNumber:0,
 
         //被提问的次数
-        askTimes:'1',
+        askTimes:0,
 
         //展示的小组
-        showGroup:[{
-          id:'',
-          attendanceId:'',
-          order:'',
-          num:'',
-          score:'',
-          isPresent:''
-        }],
+        showGroup:[],
+
+      // {
+      //   id:'',
+      //     attendanceId:'',
+      //   order:'',
+      //   num:'',
+      //   score:'',
+      //   isPresent:''
+      // }
 
         //提问的人
-        askGroup:[{
-          group:'1-1',
-          name:'燕小六',
-          score:'3',
-        },
-          {
-            group:'1-2',
-            name:'赵四',
-            score:'2',
-          },
-          {
-            group:'1-4',
-            name:'钱六',
-            score:'1',
-          },
-          {
-            group:'2-3',
-            name:'王楞奇',
-            score:'4',
-          }],
+        askGroup:[],
         chooseShowing:0,
         chooseAlter:0,
         chooseAsking:0,
@@ -146,10 +129,19 @@
         //sockjs
         stompClient:'',
         timer:'',
+        isConnect:false,
       }
     },
     methods:{
 
+      getAsk:function () {
+        //抽取提问
+        if (this.isConnect){
+          this.stompClient.send(`/app/teacher/class/${this.$data.classId}/seminar/${this.$data.seminarId}/pickQuestion`, {}, JSON.stringify(this.$data.showGroup[this.showNumber].attendanceId));
+        }
+        // console.log(this.showGroup)
+
+      },
 
       initWebSocket() {
         this.connection();
@@ -166,7 +158,7 @@
       },
       connection() {
         // 建立连接对象
-        this.socket = new SockJS('http://ncg4bc.natappfree.cc/rbs-websocket');
+        this.socket = new SockJS('http://119.29.24.35:8001/rbs-websocket');
 
         // 获取STOMP子协议的客户端对象
         this.stompClient = Stomp.over(this.socket);
@@ -176,12 +168,24 @@
         // 向服务器发起websocket连接
         this.stompClient.connect({},{},
           (frame) => {
-            this.stompClient.send('/app/teacher/class/' + this.$data.classId + '/seminar/' + this.$data.seminarId + '/nextTeam', {}, JSON.stringify(this.$data.showNumber+1));
             // this.stompClient.send('/app/teacher/class/' + this.$data.classId + '/seminar/' + this.$data.seminarId + '/pickQuestion', {}, JSON.stringify('91'));
-            this.stompClient.subscribe('/topic/teacher/class/' + this.$data.classId + '/seminar/' + this.$data.seminarId + '/raiseQuestion', (msg) => { // 订阅服务端提供的某个topic
-              console.log('广播成功');
-              console.log(123 + msg);  // msg.body存放的是服务端发送给我们的信息
+
+
+            this.isConnect = true
+
+            //监听学生提问
+            this.stompClient.subscribe('/topic/client/class/' + this.$data.classId + '/seminar/' + this.$data.seminarId + '/raiseQuestion', (msg) => { // 订阅服务端提供的某个topic
+              this.askTimes = JSON.parse(msg.body)
             }, {});
+
+
+            //抽奖
+            this.stompClient.subscribe(`/topic/client/class/${this.$data.classId}/seminar/${this.$data.seminarId}/pickQuestion`, (msg) => { // 订阅服务端提供的某个topic
+              this.askGroup.push((JSON.parse(msg.body)))
+            }, {});
+
+
+            this.$data.isConnect=true
           }, (err) => {
           // 连接发生错误时的处理函数
           console.log('连接失败');
@@ -273,6 +277,7 @@
 
       nextShow:function(){
         let _this=this;
+        this.stompClient.send('/app/teacher/class/' + this.$data.classId + '/seminar/' + this.$data.seminarId + '/nextTeam', {}, JSON.stringify(this.$data.showNumber+1));
         if(_this.$data.chooseShowing.toString()!==(_this.$data.showGroup.length-1).toString()){
           _this.$data.currentType='1';
           document.getElementById('ask'+_this.$data.chooseAsking).style.color = "black";
@@ -387,7 +392,8 @@
       },
       getAskList:function(){
 
-      }
+      },
+
     },
     created(){
       this.getAllTeam();
@@ -400,6 +406,7 @@
       this.disconnect();
       clearInterval(this.timer);
     },
+
   }
 </script>
 

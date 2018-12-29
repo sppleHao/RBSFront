@@ -50,10 +50,10 @@
               })
             } else {
               console.log(_this.$data.role);
-              if (_this.$data.role === true) {
+              if (_this.$data.role === false) {
                 this.$axios({
                   method: 'put',
-                  url: '/teacher/active',
+                  url: '/student/active',
                   data: {
                     password: _this.$data.newPassword,
                   },
@@ -65,7 +65,7 @@
                     message: '激活成功!',
                     type: 'success'
                   });
-                  _this.enter(_this.$data.id);
+                  _this.enter1(_this.$data.id);
                 }).catch(function (error) {
                   _this.$message({
                     message: '激活失败，请重试!',
@@ -76,7 +76,7 @@
               else{
                 this.$axios({
                   method: 'put',
-                  url: '/student/active',
+                  url: '/teacher/active',
                   data: {
                     password: _this.$data.newPassword,
                   },

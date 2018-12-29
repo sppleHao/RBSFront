@@ -13,7 +13,7 @@
         </div>
 
         <div style="width:30%;display:block;justify-content: center;text-align: center">
-          <span class="span2" style="font-size: 4vmax" >{{this.$route.query.seminarTopic}}</span>
+          <span class="span2" style="font-size: 2.5vmax" >{{this.$route.query.seminarTopic}}</span>
         </div>
 
         <div style="width:35%;justify-content: center;text-align: center">
@@ -40,10 +40,25 @@
           </div>
 
         </div>
-    </div>
+
+      <div  style="display: flex;height:8vmax;width: 100%;justify-content:center">
+        <div style="width: 30%;justify-content: center;text-align: center">
+          <span class="span1">{{showStudent.account}}</span>
+        </div>
+
+        <div style="width:40%;display:block;justify-content: center;text-align: center">
+          <span class="span2">{{showStudent.name}}</span>
+        </div>
+
+        <div  style="width:30%;visibility: hidden;justify-content: center;text-align: center">
+          <span class="span1">第{{index+1}}组</span>
+        </div>
+      </div>
+
     <div class="footer">
       <Button v-if="isConnect" class="button" style="width: 50%" @click="raiseQuestion">Q&A</Button>
     </div>
+  </div>
   </div>
 </template>
 
@@ -65,6 +80,7 @@
           presentTeamCount:0,
           timer:'',
           isConnect:false,
+          showStudent:''
         }
       },
       created(){
@@ -97,7 +113,7 @@
         },
         connection() {
           // 建立连接对象
-          let socket = new SockJS('http://ncg4bc.natappfree.cc/rbs-websocket');
+          let socket = new SockJS('http://119.29.24.35:8001/rbs-websocket');
           // 获取STOMP子协议的客户端对象
 
           this.stompClient = Stomp.over(socket);
@@ -112,9 +128,9 @@
             },{});
 
             //监听抽取提问
-            this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/pickQuestion`, (msg) => {
-
-            },{});
+            this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/pickQuestion`, (msg) => { // 订阅服务端提供的某个topic
+              this.showStudent =JSON.parse(msg.body)
+            }, {});
 
             //监听学生提问
             this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/raiseQuestion`, (msg) => {
@@ -214,9 +230,7 @@
               )
             }
             else {
-
             }
-
         }
       },
       computed:{

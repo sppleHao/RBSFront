@@ -2,8 +2,8 @@ require('es6-promise').polyfill()
 import axios from 'axios'
 
 export const Axios = axios.create({
-  // baseURL: 'http://119.29.24.35:8000',
-  baseURL: 'http://ncg4bc.natappfree.cc/',
+  baseURL: 'http://119.29.24.35:8001',
+  // baseURL: 'http://gscawv.natappfree.cc/',
   // baseURL:'http://loaclhost:8081',
   timeout: 10000,
 })

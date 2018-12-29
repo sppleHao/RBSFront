@@ -97,9 +97,11 @@
               localStorage.setItem("token", response.data.jwtToken);
               console.log(response.data.jwtToken);
               if (response.data.obj.isActive === true){
+                //教师
                 if(response.data.obj.isTeacher===true){
                   _this.enter(localStorage.getItem("token"),response.data.obj.isTeacher);
                 }
+                //学生
                 else{
                   _this.enter1(localStorage.getItem("token"),response.data.obj.isTeacher);
                 }
