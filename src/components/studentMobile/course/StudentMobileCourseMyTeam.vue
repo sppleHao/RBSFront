@@ -275,7 +275,6 @@
               this.$Message.error(err.message)
             })
         },
-        //todo
         leaveTeam(){
           this.$http.delete(this.leaveTeamUrl)
             .then(res=>{

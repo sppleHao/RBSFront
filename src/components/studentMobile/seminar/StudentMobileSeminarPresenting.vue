@@ -9,7 +9,7 @@
       <div style="display: flex;height:8vmax;width: 100%;justify-content:center">
 
         <div style="width: 35%;justify-content: center;text-align: center">
-          <span class="span1" style="font-size:2.3vmax;color: red;">第{{presentIndex+1}}组展示中</span>
+          <span class="span1" style="font-size:2.3vmax;color: red;">第{{presentIndex}}组展示中</span>
         </div>
 
         <div style="width:30%;display:block;justify-content: center;text-align: center">
@@ -42,7 +42,7 @@
         </div>
     </div>
     <div class="footer">
-      <Button class="button" style="width: 50%">Q&A</Button>
+      <Button v-if="isConnect" class="button" style="width: 50%" @click="raiseQuestion">Q&A</Button>
     </div>
   </div>
 </template>
@@ -59,11 +59,12 @@
         return{
           title:this.$route.query.courseName+'-'+"讨论课",
           pres:[],
-          questionNumber:1,
+          questionNumber:0,
           getTeamListUrl:`attendance`,
           stompClient:'',
           presentIndex:0,
           timer:'',
+          isConnect:false,
         }
       },
       created(){
@@ -83,12 +84,15 @@
           let that= this;
           // 断开重连机制,尝试发送消息,捕获异常发生时重连
           this.timer = setInterval(() => {
-            try {
-              that.stompClient.send("test");
-            } catch (err) {
-              console.log("断线了: " + err);
-              that.connection();
-            }
+            // try {
+            //   this.stompClient.send(`/app/teacher/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/raiseQuestion`,
+            //     {},
+            //     JSON.stringify('91'),
+            //   )
+            // } catch (err) {
+            //   console.log("断线了: " + err);
+            //   that.connection();
+            // }
           }, 5000);
         },
         connection() {
@@ -99,31 +103,31 @@
           this.stompClient = Stomp.over(socket);
 
           //向服务器发起websocket连接
-          this.stompClient.connect(() => {
+          this.stompClient.connect({},{},() => {
 
             //监听下一组
             this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/nextTeam`, (msg) => {
-              console.log('下一组')
-              console.log(msg);
-            },headers);
+              // console.log('下一组')
+              console.log(JSON.parse(msg.body))
+              this.presentIndex = JSON.parse(msg.body)
+            },{});
 
             //监听抽取提问
             this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/pickQuestion`, (msg) => {
-              console.log('抽取提问')
+              // console.log('抽取提问')
               console.log(msg);
-            },headers);
+            },{});
 
-
-          //发送学生提问
-            // this.stompClient.send(``,
-            //   headers,
-            //   JSON.stringify({sender: '',chatType: 'JOIN'}),
+            this.isConnect=true
+            // 发送学生提问
+            // this.stompClient.send(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/nextTeam`,
+            //   {},
+            //   JSON.stringify('91'),
             // )   //用户加入接口
           }, (err) => {
             // 连接发生错误时的处理函数
             console.log('失败')
             console.log(err);
-            console.log(err)
           });
          },
         disconnect() {
@@ -160,6 +164,12 @@
 
             })
         },
+        raiseQuestion(){
+            this.stompClient.send(`/app/teacher/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/raiseQuestion`,
+                {},
+                JSON.stringify('91'),
+              )
+        }
       },
       computed:{
         allPres:function () {
@@ -180,7 +190,7 @@
             }
           }
 
-          this.presentIndex=presentIndex
+          this.presentIndex=presentIndex+1
 
           return r
         }
