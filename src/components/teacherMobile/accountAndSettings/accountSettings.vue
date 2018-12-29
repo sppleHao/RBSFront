@@ -1,7 +1,7 @@
 <template>
   <div class="root" @click="closeMenu">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">账户与设置</span>
       <OCMenu></OCMenu>
     </div>
@@ -70,6 +70,9 @@
             _this.$data.idNum=response.data.account;
             _this.$data.email=response.data.email;
           })
+        },
+        back:function(){
+          this.$router.go(-1);
         }
       },
       created() {

@@ -5,7 +5,7 @@
 <template>
   <div class="root" @click="closeMenu">
     <div class="head">
-      <span style="visibility: hidden"><Icon type="ios-arrow-back" size="large"/></span>
+      <span style="visibility: hidden"><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">我</span>
       <OCMenu></OCMenu>
     </div>

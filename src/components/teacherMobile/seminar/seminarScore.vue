@@ -6,8 +6,8 @@
 <template>
   <div class="root" @click="closeMenu">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
-      <span style="width:85%">{{name}}-成绩</span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
+      <span style="width:85%">{{name}}-{{seminar}}-成绩</span>
       <OCMenu></OCMenu>
     </div>
     <div class="main">
@@ -24,10 +24,10 @@
         <div class="col1"><input v-model="item.presentationScore" style="width: 60%;text-align: center;border: 1px #f2f2f2 solid"></input></div>
         <div class="col1"><input v-model="item.questionScore" style="width: 60%;text-align: center;border: 1px #f2f2f2 solid"></input></div>
         <div class="col1"><input v-model="item.reportScore" style="width: 60%;text-align: center;border: 1px #f2f2f2 solid"></input></div>
-        <div class="col2"><input v-model="item.totalScore" style="width: 60%;text-align: center;border: 1px #f2f2f2 solid;color: #96c864"></input></div>
+        <div class="col2"><div style="width: 60%;text-align: center;color: #96c864">{{item.totalScore}}</div></div>
       </div>
       <div class="foot">
-        <button class="button">确认修改</button>
+        <button class="button" @click="alterAll">确认修改</button>
       </div>
     </div>
   </div>
@@ -76,7 +76,6 @@
               },
             }).then(function (response) {
               _this.$data.tableData=response.data.scores;
-              console.log(response.data.scores.length);
               for(var i=0;i<response.data.scores.length;i++){
                 _this.$data.tableData[i].totalScore=response.data.scores[i].totalScore;
                 _this.$data.tableData[i].presentationScore=response.data.scores[i].presentationScore;
@@ -88,7 +87,50 @@
             }).catch(function(error){
               console.log(error);
             })
+          },
+        alterAll:function(){
+          let _this=this;
+          const score=[{
+            teamId:'',
+            reportScore:'',
+            questionScore:'',
+            presentationScore:''
+          }];
+          score.splice(0,score.length);
+          for(var i=0;i<_this.$data.tableData.length;i++){
+            score.push({
+              teamId:_this.$data.tableData[i].teamBaseInfoVO.id,
+              reportScore:_this.$data.tableData[i].reportScore===null?0:parseFloat(_this.$data.tableData[i].reportScore),
+              questionScore:_this.$data.tableData[i].questionScore===null?0:parseFloat(_this.$data.tableData[i].questionScore),
+              presentationScore:_this.$data.tableData[i].presentationScore===null?0:parseFloat(_this.$data.tableData[i].presentationScore)
+            })
           }
+
+          this.$axios({
+            url:'/seminarscore',
+            method:'put',
+            headers: {
+              'Authorization': 'Bearer ' + this.$data.id
+            },
+            data:{
+              classId:parseInt(_this.$data.classNumber),
+              seminarId:parseInt(_this.$data.seminarId),
+              scoreDTOS:score
+            }
+          }).then(function(response){
+            if(response.data===true){
+              _this.$message({
+                message:'修改成功!',
+                type:'success'
+              })
+            }
+          }).catch(function(error){
+            console.log(error);
+          })
+        },
+        back:function(){
+          this.$router.go(-1);
+        }
       },
       created() {
           this.getAll()
@@ -159,8 +201,8 @@
   .foot{
     height: 9%;
     width: 100%;
-    position: absolute;
-    bottom: 0;
+    position: relative;
+    top: 50px;
   }
   .button{
     height: 100%;

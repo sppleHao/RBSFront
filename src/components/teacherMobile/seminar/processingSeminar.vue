@@ -1,7 +1,7 @@
 <template>
   <div class="root" @click="closeMenu">
     <div class="head1">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">{{name}}-讨论课</span>
       <OCMenu></OCMenu>
     </div>
@@ -75,10 +75,10 @@
       <div style="text-align:center;font-size: 2vmax;color: #000;">
         <p>讨论课已结束</p>
         <p>请设置书面报告截止时间</p>
-        <DatePicker type="datetime" placeholder="选择日期和时间" style="width: 100%;margin-top: 5%" size="small"></DatePicker>
+        <DatePicker type="datetime" placeholder="选择日期和时间" style="width: 100%;margin-top: 5%" size="small" v-model="DDL"></DatePicker>
       </div>
       <div slot="footer">
-        <button class="textButton" @click="confirmEnd(1)">确认</button>
+        <button class="textButton" @click="confirmEnd()">确认</button>
       </div>
     </el-dialog>
   </div>
@@ -91,6 +91,7 @@
     name: "processingSeminar",
     data() {
       return {
+        DDL:new Date().toLocaleDateString(),
         id:localStorage.getItem("token"),
         name:this.$route.params.name,
         courseNumber:this.$route.params.courseNumber,
@@ -108,6 +109,7 @@
         //展示的小组
         showGroup:[{
           id:'',
+          attendanceId:'',
           order:'',
           num:'',
           score:'',
@@ -153,36 +155,34 @@
         this.connection();
         let that= this;
         // 断开重连机制,尝试发送消息,捕获异常发生时重连
-        this.timer = setInterval(() => {
-          try {
-            that.stompClient.send("test1");
-          } catch (err) {
-            console.log("断线了: " + err);
-            that.connection();
-          }
-        }, 5000);
+        // this.timer = setInterval(() => {
+        //   try {
+        //     that.stompClient.send("test1");
+        //   } catch (err) {
+        //     console.log("断线了: " + err);
+        //     that.connection();
+        //   }
+        // }, 5000);
       },
       connection() {
         // 建立连接对象
-        this.socket = new SockJS('http://9bv6s6.natappfree.cc/rbs-websocket');
+        this.socket = new SockJS('http://ncg4bc.natappfree.cc/rbs-websocket');
+
         // 获取STOMP子协议的客户端对象
         this.stompClient = Stomp.over(this.socket);
-        // console.log(this.stompClient);
+
         // 定义客户端的认证信息,按需求配置
-        let headers = {
-          Authorization:'Bearer ' + this.$data.id,
-        };
+
         // 向服务器发起websocket连接
-        this.stompClient.connect(headers,() => {
-          // this.stompClient.subscribe('/topic/public', (msg) => { // 订阅服务端提供的某个topic
-          //   console.log('广播成功')
-          //   console.log(msg);  // msg.body存放的是服务端发送给我们的信息
-          // },headers);
-          // this.stompClient.send("/app/chat.addUser",
-          //   headers,
-          //   JSON.stringify({sender: '',chatType: 'JOIN'}),
-          // )   //用户加入接口
-        }, (err) => {
+        this.stompClient.connect({},{},
+          (frame) => {
+            this.stompClient.send('/app/teacher/class/' + this.$data.classId + '/seminar/' + this.$data.seminarId + '/nextTeam', {}, JSON.stringify(this.$data.showNumber+1));
+            // this.stompClient.send('/app/teacher/class/' + this.$data.classId + '/seminar/' + this.$data.seminarId + '/pickQuestion', {}, JSON.stringify('91'));
+            this.stompClient.subscribe('/topic/teacher/class/' + this.$data.classId + '/seminar/' + this.$data.seminarId + '/raiseQuestion', (msg) => { // 订阅服务端提供的某个topic
+              console.log('广播成功');
+              console.log(123 + msg);  // msg.body存放的是服务端发送给我们的信息
+            }, {});
+          }, (err) => {
           // 连接发生错误时的处理函数
           console.log('连接失败');
           console.log(err);
@@ -194,24 +194,50 @@
         }
       },  // 断开连接
 
-
+      back:function(){
+        this.$router.go(-1);
+      },
 
       askId:function(index){
         return 'ask'+index
       },
       confirmEnd:function(){
-        //发送ddl
-        this.$router.push({
-          name:'teacherMobileSpecificSeminarHome',
-          params:{
-            name:this.$data.name,
-            courseNumber:this.$data.courseNumber,
-            seminar:this.$data.seminar,
-            seminarNumber:this.$data.seminarId,
-            class:this.$data.className,
-            classNumber:this.$data.classId
+        let _this=this;
+        this.$axios({
+          url:'/seminar/'+_this.$data.seminarId+'/class/'+_this.$data.classId,
+          method:'put',
+          headers:{
+            'Authorization': 'Bearer ' + this.$data.id
+          },
+          data:{
+            reportDDL:this.myFormatDate(_this.$data.DDL)
           }
-        })
+        }).then(function(response) {
+          if(response.data===true){
+            _this.$message({
+              message:'设置成功!',
+              type:'success'
+            })
+          }
+          _this.$router.push({
+            name:'teacherMobileSpecificSeminarHome',
+            params:{
+              name:_this.$data.name,
+              courseNumber:_this.$data.courseNumber,
+              seminar:_this.$data.seminar,
+              seminarNumber:_this.$data.seminarId,
+              class:_this.$data.className,
+              classNumber:_this.$data.classId
+            }
+          })
+        }).catch(function(error){
+          console.log(error)
+        });
+      },
+      myFormatDate:function(abc){
+        const date = abc.toString();
+        var date1=new Date(date);
+        return date1.getFullYear() + '-' + (date1.getMonth() + 1) + '-' + date1.getDate() + ' ' + this.checkTime(date1.getHours()) + ':' + this.checkTime(date1.getMinutes()) + ':' + this.checkTime(date1.getSeconds());
       },
       closeMenu: function () {
         const menu = document.getElementById("show");
@@ -299,10 +325,11 @@
           _this.$data.showGroup.splice(0,_this.$data.showGroup.length);
           for(var i=0;i<response.data.length;i++) {
             _this.$data.showGroup.push({
+              attendanceId:response.data[i].id,
               id: response.data[i].teamBaseInfoVO.id,
               order: response.data[i].teamOrder,
               num: response.data[i].teamBaseInfoVO.teamSerials,
-              score: '0',
+              score: response.data[i].presentationScore,
               isPresent:(response.data[i].present).toString()
             })
           }
@@ -347,6 +374,13 @@
             presentationScore: _this.$data.showGroup[_this.$data.chooseAlter].score
           }
         }).then(function(response){
+          if(response.data===true){
+            _this.$message({
+              message:'打分成功!',
+              type:'success'
+            })
+            _this.$data.showGroup[_this.$data.chooseAlter].isPresent='1';
+          }
         }).catch(function(error){
           console.log(error);
         })
@@ -360,7 +394,12 @@
     },
     mounted() {
       this.initWebSocket();
-    }
+    },
+    beforeDestroy: function () {
+      // 页面离开时断开连接,清除定时器
+      this.disconnect();
+      clearInterval(this.timer);
+    },
   }
 </script>
 

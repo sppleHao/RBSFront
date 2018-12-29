@@ -5,7 +5,7 @@
 <template>
   <div class="root" @click="closeMenu">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">讨论课</span>
       <OCMenu></OCMenu>
     </div>
@@ -44,6 +44,9 @@
             if(!menu.contains(event.target)) document.getElementById("show").style.display="none";
           }
         },
+        back:function(){
+          this.$router.go(-1);
+        },
         enterProcessingHome:function(){
           let _this=this;
           this.$axios({
@@ -77,7 +80,12 @@
                   type:'warning'
                 })
               })
+            }).catch(function(error){
+            _this.$message({
+              message:'当前没有正在进行的讨论课o!',
+              type:'warning'
             })
+          })
         },
         enterSpecificSeminar:function(id,name,num){
           this.$router.push({

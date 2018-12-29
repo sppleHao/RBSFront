@@ -1,7 +1,7 @@
 <template>
   <div class="root" @click="closeMenu" id="root">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">学生成绩</span>
       <OCMenu></OCMenu>
     </div>
@@ -140,6 +140,9 @@
         hei:function() {
           let Height = window.innerHeight;
           document.getElementById("root").style.height = Height + "px";
+        },
+        back:function(){
+          this.$router.go(-1);
         }
       },
       mounted() {

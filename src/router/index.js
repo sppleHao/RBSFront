@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import teacherPCLogin from '@/components/teacherPC/login'
 import teacherMobileLogin from '@/components/teacherMobile/loginAndActivateAndHome/login'
 import teacherMobileFindPassword from '@/components/teacherMobile/accountAndSettings/findPassword'
 import teacherMobileSpecificSeminarHome from '@/components/teacherMobile/seminar/specificSeminarHome'
@@ -60,7 +59,6 @@ export default new Router({
       path: '/',
       redirect: '/MTlogin',//设置默认指向的路径
     },
-
     {
       //登陆
       path: '/MTlogin',
@@ -346,11 +344,6 @@ export default new Router({
 
     //PC端路由
     //教师端
-    {
-      path:'/PCTlogin',
-      name:'teacherPCLogin',
-      component:teacherPCLogin
-    },
     //学生端
 
   ]

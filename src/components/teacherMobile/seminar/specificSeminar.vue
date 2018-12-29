@@ -1,7 +1,7 @@
 <template>
   <div class="root" @click="closeMenu">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">{{this.$route.params.name}}</span>
       <OCMenu></OCMenu>
     </div>
@@ -97,6 +97,9 @@
               seminarNumber:seminarId,
             }
           })
+        },
+        back:function(){
+          this.$router.go(-1);
         },
         enterSpecificSeminarHome:function(id,name,courseNumber,seminar,seminarNumber,cclass,classNumber){
           this.$router.push({

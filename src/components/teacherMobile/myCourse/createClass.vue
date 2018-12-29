@@ -5,7 +5,7 @@
 <template>
   <div class="root" @click="closeMenu" id="root">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">新建班级</span>
       <span style="visibility: hidden"><Icon type="ios-arrow-back" size="large"/></span>
     </div>
@@ -98,6 +98,9 @@
               courseNumber:this.$data.courseNumber
             }
           })
+        },
+        back:function(){
+          this.$router.go(-1);
         }
       },
       mounted() {

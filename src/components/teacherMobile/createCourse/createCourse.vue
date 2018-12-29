@@ -1,7 +1,7 @@
 <template>
   <div class="root" @click="closeMenu" id="root">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">新建课程</span>
       <span style="visibility: hidden;"><Icon type="ios-arrow-back" size="large"/></span>
     </div>
@@ -33,7 +33,7 @@
           <div style="font-size:130%;color:#000;height: 100%;width: 40%;display: flex;align-items: center;margin-left: 2%;">小组人数：</div>
           <div style="width: 56%;height: 100%;display: flex;align-items: center">
             <div style="width: 25%;height:100%;font-size:150%;color:#259B24;display: flex;align-items: center;justify-content: center">最少</div>
-            <div style="width: 50%;height:100%;display: flex;align-items: center"><Slider v-model="value1" range style="width: 90%;margin-left: 5%" :step="1" :max="20"></Slider></div>
+            <div style="width: 50%;height:100%;display: flex;align-items: center"><Slider v-model="value1" range style="width: 90%;margin-left: 5%" :step="1" :max="10"></Slider></div>
             <div style="width: 25%;height:100%;font-size:150%;color:#259B24;display: flex;align-items: center;justify-content: center">最多</div>
           </div>
         </div>
@@ -52,19 +52,19 @@
               <div style="height: 35%;width: 100%;font-size:60%">
                 <div style="float:left;width: 20%;height:100%;font-size:70%;display: flex;align-items: center;">.NET：</div>
                 <div style="width: 10%;height:100%;font-size:80%;color:#259B24;display: flex;align-items: center;justify-content: center;float: left">low</div>
-                <div style="width: 50%;height:100%;display: flex;align-items: center;float: left;margin-left: 2%"><Slider v-model="value2" range style="width: 90%;margin-left: 5%" :step="1" :max="20"></Slider></div>
+                <div style="width: 50%;height:100%;display: flex;align-items: center;float: left;margin-left: 2%"><Slider v-model="value2" range style="width: 90%;margin-left: 5%" :step="1" :max="6"></Slider></div>
                 <div style="width: 15%;height:100%;font-size:80%;color:#259B24;display: flex;align-items: center;justify-content: center;float: left">high</div>
               </div>
               <div style="height: 35%;width: 100%;font-size:60%">
                 <div style="float:left;width: 20%;height:100%;font-size:70%;display: flex;align-items: center;">J2EE：</div>
                 <div style="width: 10%;height:100%;font-size:80%;color:#259B24;display: flex;align-items: center;justify-content: center;float: left">low</div>
-                <div style="width: 50%;height:100%;display: flex;align-items: center;float: left;margin-left: 2%"><Slider v-model="value3" range style="width: 90%;margin-left: 5%" :step="1" :max="20"></Slider></div>
+                <div style="width: 50%;height:100%;display: flex;align-items: center;float: left;margin-left: 2%"><Slider v-model="value3" range style="width: 90%;margin-left: 5%" :step="1" :max="6"></Slider></div>
                 <div style="width: 15%;height:100%;font-size:80%;color:#259B24;display: flex;align-items: center;justify-content: center;float: left">high</div>
               </div>
                <div style="height: 30%;width: 100%;font-size:60%;">
                  <Select v-model="select000" style="width: 80%;height: 80%;margin-left: 10%;border:1px solid green;border-radius: 5px">
-                   <Option>均满足</Option>
-                   <Option>满足其一</Option>
+                   <Option :value="1">均满足</Option>
+                   <Option :value="0">满足其一</Option>
                  </Select>
               </div>
             </span>
@@ -76,25 +76,32 @@
         <div class="text">冲突课程：</div>
         <div class="contain">
           <div class="conflict-item1" id="conflict1">
-            <Select v-model="select1" class="select-conflict">
+            <Select v-model="select1" class="select-conflict1">
+              <Option v-for="item in conflictList" :key="item.id" :value="item.id">{{ item.name }}</Option>
+            </Select>
+            <Select v-model="select2" class="select-conflict2">
               <Option v-for="item in conflictList" :key="item.id" :value="item.id">{{ item.name }}</Option>
             </Select>
           </div>
+
           <div class="conflict-item2" id="conflict2">
-            <Select v-model="select2" class="select-conflict">
+            <Select v-model="select3" class="select-conflict1">
+              <Option v-for="item in conflictList" :key="item.id" :value="item.id">{{ item.name }}</Option>
+            </Select>
+            <Select v-model="select4" class="select-conflict2">
               <Option v-for="item in conflictList" :key="item.id" :value="item.id">{{ item.name }}</Option>
             </Select>
           </div>
+
           <div class="conflict-item3" id="conflict3">
-            <Select v-model="select3" class="select-conflict">
+            <Select v-model="select5" class="select-conflict1">
+              <Option v-for="item in conflictList" :key="item.id" :value="item.id">{{ item.name }}</Option>
+            </Select>
+            <Select v-model="select6" class="select-conflict2">
               <Option v-for="item in conflictList" :key="item.id" :value="item.id">{{ item.name }}</Option>
             </Select>
           </div>
-          <div class="conflict-item4" id="conflict4">
-            <Select v-model="select4" class="select-conflict">
-              <Option v-for="item in conflictList" :key="item.id" :value="item.id">{{ item.name }}</Option>
-            </Select>
-          </div>
+
           <div class="new-item">
             <Button style="width:100%;font-size: 130%" type="error" ghost @click="addConflict">新增对象</Button>
           </div>
@@ -121,15 +128,17 @@
           showScore:'',
           askScore:'',
           reportScore:'',
-          value1:[0,20],
-          value2: [0, 12],
+          value1:[0,10],
+          value2: [0, 6],
           value3: [0, 6],
           conflictList: [],
           select1:'',
           select2:'',
           select3:'',
           select4:'',
-          isBySex:'0',//是否有性别要求  1代表是0代表否
+          select5:'',
+          select6:'',
+          select000:'',
         }
       },
       methods: {
@@ -144,23 +153,15 @@
           document.getElementById("root").style.height = 2*Height + "px";
         },
         addConflict:function(){
-          if(this.$data.conflictNumber===4){
+          if(this.$data.conflictNumber===3){
             this.$message({
               type:'error',
-              message:'最多四个冲突课程!'
+              message:'太多啦!'
             })
           }
           else{
             document.getElementById("conflict"+(this.$data.conflictNumber+1).toString()).style.visibility="visible";
             this.$data.conflictNumber++;
-          }
-        },
-        byConstellation:function(){
-          if(document.getElementById("constellation").style.color==="green"){
-            document.getElementById("constellation").style.color="gray";
-          }
-          else{
-            document.getElementById("constellation").style.color="green";
           }
         },
         bySex:function(){
@@ -175,34 +176,61 @@
             this.$data.isBySex='1';
           }
         },
-        createCourse:function(){
-          let _this=this;
-          const courseMember = {
-            minMember: this.$data.value1[0],
-            maxMember: this.$data.value1[1],
+        createCourse:function() {
+          let _this = this;
+          const member = {
+            minMember: _this.$data.value1[0],
+            maxMember: _this.$data.value1[1],
           };
-          const conflict=new Array();
-          console.log(conflict);
-          for(let i=1;i<=_this.$data.conflictNumber;i++){
-            switch (i){
-              case 1:{
-                conflict[i-1]=_this.$data.select1;
-                break;
-              }
-              case 2:{
-                conflict[i-1]=_this.$data.select2;
-                break;
-              }
-              case 3:{
-                conflict[i-1]=_this.$data.select3;
-                break;
-              }
-              case 4:{
-                conflict[i-1]=_this.$data.select4;
-                break;
-              }
+
+          const conflict = [[],[]];
+          if(_this.$data.conflictNumber===3){
+            if(_this.$data.select6!==''){
+              conflict[0][0]=_this.$data.select1;
+              conflict[0][1]=_this.$data.select2;
+              conflict[1][0]=_this.$data.select3;
+              conflict[1][1]=_this.$data.select4;
+              conflict[2][0]=_this.$data.select5;
+              conflict[2][1]=_this.$data.select6;
+            }else if(_this.$data.select5!==''){
+              conflict[0][0]=_this.$data.select1;
+              conflict[0][1]=_this.$data.select2;
+              conflict[1][0]=_this.$data.select3;
+              conflict[1][1]=_this.$data.select4;
+              conflict[2][0]=_this.$data.select5;
+            }
+          }else if(_this.$data.conflictNumber===2){
+            if(_this.$data.select4!==''){
+              conflict[0][0]=_this.$data.select1;
+              conflict[0][1]=_this.$data.select2;
+              conflict[1][0]=_this.$data.select3;
+              conflict[1][1]=_this.$data.select4;
+            }else if(_this.$data.select3!==''){
+              conflict[0][0]=_this.$data.select1;
+              conflict[0][1]=_this.$data.select2;
+              conflict[1][0]=_this.$data.select3;
+            }
+          }else if(_this.$data.conflictNumber===1){
+            if(_this.$data.select2!==''){
+              conflict[0][0]=_this.$data.select1;
+              conflict[0][1]=_this.$data.select2;
+            }else if(_this.$data.select1!==''){
+              conflict[0][0]=_this.$data.select1;
             }
           }
+
+
+          const courseMember=[{
+            courseId:20,
+            minMember:_this.$data.value2[0],
+            maxMember:_this.$data.value2[1],
+          },
+            {
+              courseId:17,
+              minMember:_this.$data.value3[0],
+              maxMember:_this.$data.value3[1],
+            }];
+
           this.$axios({
             method: 'post',
             url: '/course',
@@ -212,13 +240,15 @@
               presentationPercentage:_this.$data.showScore,
               questionPercentage:_this.$data.askScore,
               reportPercentage:_this.$data.reportScore,
-              teamStartTime:this.myFormatDate(_this.$data.startTime),
-              teamEndTime:this.myFormatDate(_this.$data.endTime),
-              courseMemberLimitStrategy:courseMember,
+              teamStartTime:_this.myFormatDate(_this.$data.startTime),
+              teamEndTime:_this.myFormatDate(_this.$data.endTime),
+              memberLimitStrategy:member,
+              courseMemberLimitFlag:_this.$data.select000,
+              courseMemberLimitStrategies:courseMember,
               conflictCourses:conflict
             },
             headers: {
-              'Authorization': 'Bearer '+this.$data.id
+              'Authorization': 'Bearer '+_this.$data.id
             },
           }).then(function(response){
             if(response.data===true) {
@@ -241,6 +271,9 @@
             params:{id}
           })
         },
+        back:function(){
+          this.$router.go(-1);
+        },
         checkTime:function(i){
           if (i<10){
             const x="0" + i
@@ -257,7 +290,7 @@
           let _this=this;
           this.$axios({
             method: 'get',
-            url: '/course',
+            url: '/course/all',
             headers: {
               'Authorization': 'Bearer '+this.$data.id
             },
@@ -388,6 +421,7 @@
     display: flex;
     align-items: center;
     visibility: hidden;
+    border-top:1px solid #eeeeee ;
   }
   .conflict-item3{
     height: 20%;
@@ -395,13 +429,7 @@
     display: flex;
     align-items: center;
     visibility: hidden;
-  }
-  .conflict-item4{
-    height: 20%;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    visibility: hidden;
+    border-top:1px solid #eeeeee ;
   }
   .new-item{
     height: 20%;
@@ -410,9 +438,16 @@
     display: flex;
     align-items: center;
   }
-  .select-conflict{
+  .select-conflict1{
     height: 60%;
-    margin-left: 50%;
+    margin-left: 5%;
+    width: 40%;
+    border: 2px solid #259B24;
+    border-radius: 5px;
+  }
+  .select-conflict2{
+    height: 60%;
+    margin-left: 5%;
     width: 40%;
     border: 2px solid #259B24;
     border-radius: 5px;

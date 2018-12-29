@@ -1,7 +1,7 @@
 <template>
   <div class="root" @click="closeMenu">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">共享设置</span>
       <OCMenu></OCMenu>
     </div>
@@ -179,6 +179,9 @@
           }).catch(function (error) {
             console.log(error);
           })
+        },
+        back:function(){
+          this.$router.go(-1);
         }
       },
       created() {

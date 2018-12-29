@@ -1,7 +1,7 @@
 <template>
   <div class="root" id="root">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">{{this.$route.params.name}}</span>
       <span style="visibility: hidden"><Icon type="ios-arrow-back" size="large"/></span>
     </div>
@@ -211,6 +211,9 @@
             })
           }
         })
+      },
+      back:function(){
+        this.$router.go(-1);
       },
       getRound:function(){
         let _this=this;

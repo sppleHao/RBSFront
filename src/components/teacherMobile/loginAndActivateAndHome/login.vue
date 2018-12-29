@@ -96,10 +96,15 @@
               });
               localStorage.setItem("token", response.data.jwtToken);
               console.log(response.data.jwtToken);
-              if (response.data.obj.isActive === true)
-                _this.enter(localStorage.getItem("token"));
-              else
-                _this.enterActive(localStorage.getItem("token"));
+              if (response.data.obj.isActive === true){
+                if(response.data.obj.isTeacher===true){
+                  _this.enter(localStorage.getItem("token"),response.data.obj.isTeacher);
+                }
+                else{
+                  _this.enter1(localStorage.getItem("token"),response.data.obj.isTeacher);
+                }
+              }
+              else _this.enterActive(localStorage.getItem("token"),response.data.obj.isTeacher);
             }
           }).catch(function(error){
             _this.$data.userPassword='';
@@ -117,10 +122,23 @@
           });
         },
 
-        enterActive:function(id){
+        enter1:function(id,role){
+          this.$router.push({
+            name:'StudentMobileAccountIndex',
+            params:{
+              id:localStorage.getItem("token"),
+              role:role
+            }
+          });
+        },
+
+        enterActive:function(id,role){
           this.$router.push({
             name:'teacherMobileActivate',
-            params:{id}
+            params:{
+              id:id,
+              role:role
+            }
           })
         },
 

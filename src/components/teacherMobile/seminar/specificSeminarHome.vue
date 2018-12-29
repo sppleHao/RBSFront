@@ -1,7 +1,7 @@
 <template>
   <div class="root" @click="closeMenu">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">{{name}}-讨论课</span>
       <OCMenu></OCMenu>
     </div>
@@ -205,12 +205,18 @@
             }
           })
         },
+        back:function(){
+          this.$router.go(-1);
+        },
         closeMenu:function(){
           const menu=document.getElementById("show");
           if(document.getElementById("show").style.display==="block"){
             if(!menu.contains(event.target)) document.getElementById("show").style.display="none";
           }
         },
+        back:function(){
+          this.$router.go(-1);
+        }
       },
       created(){
           this.getSeminarInfo();

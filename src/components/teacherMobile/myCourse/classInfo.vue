@@ -1,7 +1,7 @@
 <template>
   <div class="root" @click="closeMenu">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">班级信息</span>
       <OCMenu></OCMenu>
     </div>
@@ -52,6 +52,9 @@
           if (document.getElementById("show").style.display === "block") {
             if (!menu.contains(event.target)) document.getElementById("show").style.display = "none";
           }
+        },
+        back:function(){
+          this.$router.go(-1);
         },
         getAllClass:function(){
           let _this = this;

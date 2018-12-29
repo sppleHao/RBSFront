@@ -1,7 +1,7 @@
 <template>
   <div class="root">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">密码设置</span>
       <span style="visibility: hidden"><Icon type="ios-arrow-back" size="large"/></span>
     </div>
@@ -31,6 +31,7 @@
           newPassword: '',
           againPassword: '',
           id: localStorage.getItem("token"),
+          role:this.$route.params.role,
         }
       },
       methods: {
@@ -48,33 +49,68 @@
                 type: 'error'
               })
             } else {
-              this.$axios({
-                method: 'put',
-                url: '/teacher/active',
-                data: {
-                  password:_this.$data.newPassword,
-                },
-                headers: {
-                  'Authorization': 'Bearer ' + _this.$data.id
-                }
-              }).then(function (response) {
-                _this.$message({
-                  message:'激活成功!',
-                  type:'success'
+              console.log(_this.$data.role);
+              if (_this.$data.role === true) {
+                this.$axios({
+                  method: 'put',
+                  url: '/teacher/active',
+                  data: {
+                    password: _this.$data.newPassword,
+                  },
+                  headers: {
+                    'Authorization': 'Bearer ' + _this.$data.id
+                  }
+                }).then(function (response) {
+                  _this.$message({
+                    message: '激活成功!',
+                    type: 'success'
+                  });
+                  _this.enter(_this.$data.id);
+                }).catch(function (error) {
+                  _this.$message({
+                    message: '激活失败，请重试!',
+                    type: 'error'
+                  })
                 })
-                _this.enter(_this.$data.id);
-              }).catch(function(error){
-                _this.$message({
-                  message:'激活失败，请重试!',
-                  type:'error'
+              }
+              else{
+                this.$axios({
+                  method: 'put',
+                  url: '/student/active',
+                  data: {
+                    password: _this.$data.newPassword,
+                  },
+                  headers: {
+                    'Authorization': 'Bearer ' + _this.$data.id
+                  }
+                }).then(function (response) {
+                  _this.$message({
+                    message: '激活成功!',
+                    type: 'success'
+                  });
+                  _this.enter(_this.$data.id);
+                }).catch(function (error) {
+                  _this.$message({
+                    message: '激活失败，请重试!',
+                    type: 'error'
+                  })
                 })
-              })
+              }
             }
           }
         },
         enter:function(id){
           this.$router.push({
             name:'teacherMobileProfile',
+            params:{id}
+          })
+        },
+        back:function(){
+          this.$router.go(-1);
+        },
+        enter1:function(id){
+          this.$router.push({
+            name:'StudentMobileAccountIndex',
             params:{id}
           })
         }

@@ -5,7 +5,7 @@
 <template>
 <div class="root">
   <div class="head">
-    <span><Icon type="ios-arrow-back" size="large"/></span>
+    <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
     <span style="width:85%">待办及通知</span>
     <OCMenu></OCMenu>
   </div>
@@ -56,16 +56,7 @@
               sender:'j2ee-张老师',
               state:'',
               reason:'',
-            },
-              {
-                //0表示共享分组邀请 1表示共享讨论课邀请 2表示特殊组队申请 3表示不合法组队申请
-                id:'',
-                type:'2',
-                text:'王二的特殊组队申请',
-                sender:'王二',
-                state:'',
-                reason:'由于本组内成员有长期请假情况，申请加人'
-              }],
+            }],
           }
       },
       methods: {
@@ -75,8 +66,8 @@
             url:'/request/team',
             method:'get',
             headers:{
-              // 'Authorization': 'Bearer ' + _this.$data.id
-              'Authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyMDA3MTAwMDEyIiwiZXhwIjoxNTQ2NDE0MzQ5fQ.MZNaCH5fj0uOzk3YOVe_Xk85f6v-KMpgKwWAJAWLJMp9Qlh3Gvea-kIJkFIl4BUeGtKrn-Od3VR5qhKSAzhPNA'
+              'Authorization': 'Bearer ' + _this.$data.id
+              // 'Authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyMDA3MTAwMDEyIiwiZXhwIjoxNTQ2NDE0MzQ5fQ.MZNaCH5fj0uOzk3YOVe_Xk85f6v-KMpgKwWAJAWLJMp9Qlh3Gvea-kIJkFIl4BUeGtKrn-Od3VR5qhKSAzhPNA'
             }
           }).then(function(response){
             for(var i=0;i<response.data.length;i++){
@@ -89,19 +80,42 @@
                 reason:response.data[i].reason
               })
             }
+            _this.getAllShare();
+          })
+        },
+        getAllShare:function(){
+          let _this=this;
+          this.$axios({
+            url:'/request',
+            method:'get',
+            headers:{
+              'Authorization': 'Bearer ' + _this.$data.id
+              // 'Authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyMDA3MTAwMDEyIiwiZXhwIjoxNTQ2NDE0MzQ5fQ.MZNaCH5fj0uOzk3YOVe_Xk85f6v-KMpgKwWAJAWLJMp9Qlh3Gvea-kIJkFIl4BUeGtKrn-Od3VR5qhKSAzhPNA'
+            }
+          }).then(function(response){
+            for(var i=0;i<response.data.length;i++){
+              _this.$data.tableData.push({
+                id:response.data[i].requestId,
+                type:response.data[i].shareType==='共享讨论课'?'1':'0',
+                text:response.data[i].mainCourseName+'（'+response.data[i].mainTeacherName+'）'+response.data[i].shareType==='共享讨论课'?'讨论课共享':'分组共享',
+                sender:'',
+                state:'',
+                reason:''
+              })
+            }
           })
         },
         agree:function(index,row){
           switch(row.type){
-            case 0:{
+            case '0':{
               this.agreeTeamShare(index,row);
               break;
             }
-            case 1:{
+            case '1':{
               this.agreeSeminarShare(index,row);
               break;
             }
-            case 2:{
+            case '2':{
               this.agreeTeamRequest(index,row);
               break;
             }
@@ -109,15 +123,15 @@
         },
         disagree:function(index,row){
           switch(row.type) {
-            case 0: {
+            case '0': {
               this.disagreeTeamShare(index, row);
               break;
             }
-            case 1: {
+            case '1': {
               this.disagreeSeminarShare(index, row);
               break;
             }
-            case 2: {
+            case '2': {
               this.disagreeTeamRequest(index, row);
               break;
             }
@@ -184,16 +198,88 @@
           })
         },
         agreeTeamShare:function(index,row){
-
+          let _this=this;
+          this.$axios({
+            url:'/request/teamshare/'+row.id,
+            method:'put',
+            headers: {
+              'Authorization': 'Bearer ' + _this.$data.id
+              // 'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyMDA3MTAwMDEyIiwiZXhwIjoxNTQ2NDE0MzQ5fQ.MZNaCH5fj0uOzk3YOVe_Xk85f6v-KMpgKwWAJAWLJMp9Qlh3Gvea-kIJkFIl4BUeGtKrn-Od3VR5qhKSAzhPNA'
+            },
+            data:{
+              handleType:'accept'
+            }
+          }).then(function(response){
+            _this.$message({
+              message:'接受邀请!',
+              type:'success'
+            })
+          }).catch(function(error){
+            console.log(error)
+          })
         },
         disagreeTeamShare:function(index,row){
-
+          let _this=this;
+          this.$axios({
+            url:'/request/teamshare/'+row.id,
+            method:'put',
+            headers: {
+              'Authorization': 'Bearer ' + _this.$data.id
+              // 'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyMDA3MTAwMDEyIiwiZXhwIjoxNTQ2NDE0MzQ5fQ.MZNaCH5fj0uOzk3YOVe_Xk85f6v-KMpgKwWAJAWLJMp9Qlh3Gvea-kIJkFIl4BUeGtKrn-Od3VR5qhKSAzhPNA'
+            },
+            data:{
+              handleType:'reject'
+            }
+          }).then(function(response){
+            _this.$message({
+              message:'拒绝邀请!',
+              type:'success'
+            })
+          }).catch(function(error){
+            console.log(error)
+          })
         },
         agreeSeminarShare:function(index,row){
-
+          let _this=this;
+          this.$axios({
+            url:'/request/seminarshare/'+row.id,
+            method:'put',
+            headers: {
+              'Authorization': 'Bearer ' + _this.$data.id
+              // 'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyMDA3MTAwMDEyIiwiZXhwIjoxNTQ2NDE0MzQ5fQ.MZNaCH5fj0uOzk3YOVe_Xk85f6v-KMpgKwWAJAWLJMp9Qlh3Gvea-kIJkFIl4BUeGtKrn-Od3VR5qhKSAzhPNA'
+            },
+            data:{
+              handleType:'accept'
+            }
+          }).then(function(response){
+            _this.$message({
+              message:'接受邀请!',
+              type:'success'
+            })
+          }).catch(function(error){
+            console.log(error)
+          })
         },
         disagreeSeminarShare:function(index,row){
-
+          let _this=this;
+          this.$axios({
+            url:'/request/seminarshare/'+row.id,
+            method:'put',
+            headers: {
+              'Authorization': 'Bearer ' + _this.$data.id
+              // 'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyMDA3MTAwMDEyIiwiZXhwIjoxNTQ2NDE0MzQ5fQ.MZNaCH5fj0uOzk3YOVe_Xk85f6v-KMpgKwWAJAWLJMp9Qlh3Gvea-kIJkFIl4BUeGtKrn-Od3VR5qhKSAzhPNA'
+            },
+            data:{
+              handleType:'reject'
+            }
+          }).then(function(response){
+            _this.$message({
+              message:'拒绝邀请!',
+              type:'success'
+            })
+          }).catch(function(error){
+            console.log(error)
+          })
         }
       },
       created() {

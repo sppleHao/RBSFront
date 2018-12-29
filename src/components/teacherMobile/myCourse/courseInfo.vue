@@ -1,7 +1,7 @@
 <template>
   <div class="root" @click="closeMenu">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">{{this.$route.params.name}}</span>
       <OCMenu></OCMenu>
     </div>
@@ -30,22 +30,22 @@
             <div style="display:flex;align-items:center;width: 35%;height: 100%;font-size: 2.2vmax;margin-left: 5%;float:left">组队截止时间：</div>
             <div style="display:flex;align-items:center;justify-content:center;width: 60%;height: 100%;float:left;font-size: 2vmax;">{{end}}</div>
           </div>
-          <div class="row">
-            <div style="display:flex;align-items:center;width: 35%;height: 100%;font-size: 2.2vmax;margin-left: 5%;float:left">组内选修课人数：</div>
-            <div style="width: 60%;height: 100%;float:left;font-size: 2vmax;">
+          <div class="row1">
+            <div style="display:flex;align-items:center;width: 35%;height: 100%;font-size: 2.2vmax;margin-left: 5%;float:left">组内选修课人数：<br/>{{this.$data.type===false?'（满足其一）':'（均满足）'}}</div>
+            <div v-if="courseMember[0].name===''" style="width: 60%;height: 100%;float:left;font-size: 2vmax;display: flex;align-items: center;justify-content: center;">无</div>
+            <div v-else style="width: 60%;height: 50%;float:left;font-size: 2vmax;" v-for="item in courseMember">
               <div style="height: 50%;width: 100%;">
-                <div style="width: 100%;height: 100%;float: left;text-align: center">J2EE:  {{J2EENumber}}人</div>
-              </div>
-              <div style="height: 50%;width: 100%;">
-                <div style="width: 100%;height: 100%;float: left;text-align: center">.NET:  {{NetNumber}}人</div>
+                <div style="width: 100%;height: 100%;float: left;text-align: center">{{item.name}}:  {{item.min}}~{{item.max}}人</div>
               </div>
             </div>
           </div>
           <div class="conflict">
-            <div style="display:flex;width: 35%;height: 30%;font-size: 2.2vmax;margin-left: 5%;float:left;align-items: center">冲突课程：</div>
-            <div style="width: 60%;height: 100%;float:left;">
-              <div style="font-size: 2vmax;padding-bottom: 1%;height: 20%;" v-for="c in conflict">
-                <div style="margin-left:30%;width: 40%;height: 100%;display:flex;align-items:center;justify-content:center;border-bottom: 1px solid #f2f2f2">{{c.name}}</div>
+            <div style="display:flex;width: 35%;height: 30%;font-size: 2.2vmax;margin-left: 5%;align-items: center">冲突课程：</div>
+            <div style="width: 100%;height: 70%">
+              <div style="font-size: 2vmax;padding-bottom: 1%;height: 30%;float:left;margin-left: 10%;width: 10%;border: 1px solid #dddddd;" v-for="c in conflict">
+                <div style="width: 40%;height: 50%;border-bottom: 1px solid #f2f2f2" v-for="item in c">
+                  {{item.name}}
+                </div>
               </div>
             </div>
           </div>
@@ -74,14 +74,15 @@
           end:'',
           sex:'男：2-4  女：2-4',
           constellation:'无',
-          conflict:[{
+          conflict:'',
+          courseMember:[{
             name:'',
-            teacher:''
+            min:'',
+            max:''
           }],
           //是否是主课程 1表示非从课程 0表示从课程
           isMainCourse:'',
-          J2EENumber:'2~3',
-          NetNumber:'2~3'
+          type:'',
         }
       },
       methods: {
@@ -90,6 +91,9 @@
           if (document.getElementById("show").style.display === "block") {
             if (!menu.contains(event.target)) document.getElementById("show").style.display = "none";
           }
+        },
+        back:function(){
+          this.$router.go(-1);
         },
         deleteCourse:function(number,name){
           let _this=this;
@@ -136,40 +140,28 @@
             _this.$data.askScore=' '+response.data.questionPercentage+'%';
             _this.$data.showScore=' '+response.data.presentationPercentage+'%';
             _this.$data.reportScore=' '+response.data.reportPercentage+'%';
-            _this.$data.peopleNum=response.data.courseMemberLimitStrategy.minMember+"~"+response.data.courseMemberLimitStrategy.maxMember;
             _this.$data.start=response.data.teamStartTime;
             _this.$data.end=response.data.teamEndTime;
-
-
-            _this.$data.conflict.splice(0,_this.$data.conflict.length);
-            for(var i=0;i<response.data.conflictCourses.length;i++) {
-              _this.$data.conflict.push({
-                name:response.data.conflictCourses[i].name,
-                teacher:'',
-              })
+            _this.$data.peopleNum=response.data.memberLimitStrategy.minMember+"~"+response.data.memberLimitStrategy.maxMember;
+            _this.$data.type=response.data.courseMemberLimitStrategyStyle;
+            _this.$data.courseMember=response.data.courseMemberLimitStrategyVOS;
+            for(var i=0;i<response.data.courseMemberLimitStrategyVOS.length;i++){
+              _this.$data.courseMember[i].name= response.data.courseMemberLimitStrategyVOS[i].courseName;
+              _this.$data.courseMember[i].min=response.data.courseMemberLimitStrategyVOS[i].minMember;
+              _this.$data.courseMember[i].max=response.data.courseMemberLimitStrategyVOS[i].maxMember;
             }
+
+            _this.$data.conflict=response.data.conflictCourses;
+
+            console.log(_this.$data.conflict[1][1].name);
 
             if(response.data.shareSeminar===false&&response.data.shareTeam===false){
               _this.$data.isMainCourse='1';
             }
-            // else _this.$data.isMainCourse='0';
-
           }).catch(function (error) {
             console.log(error);
           })
         },
-        getCourseNameNTeacherById:function(id,i){
-          let _this=this;
-          this.$axios({
-            url:'/course/'+id,
-            method: 'get',
-            headers: {
-              'Authorization': 'Bearer ' + this.$data.id
-            },
-          }).then(function(response){
-            _this.$data.conflict.push(response.data);
-          });
-        }
       },
       created() {
         this.getCourseInfo();
@@ -233,21 +225,24 @@
   .scoreRule{
     height: 15%;
     width:100%;
-
   }
   .row{
     height: 10%;
     width: 100%;
   }
+  .row1{
+    height: 20%;
+    width: 100%;
+  }
   .conflict{
     border-top: 1px solid #aaaaaa;
-    height: 30%;
+    height: 35%;
     width: 100%;
   }
   .mainCourse{
     height: 8%;
     width:98%;
-    position: absolute;
+    position: fixed;
     bottom:0;
     display: block;
   }

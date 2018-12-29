@@ -4,7 +4,7 @@
 <template>
   <div class="root">
     <div class="head">
-      <span><Icon type="ios-arrow-back" size="large"/></span>
+      <span><Icon type="ios-arrow-back" size="large" @click="back"/></span>
       <span style="width:85%">{{this.$route.params.round}}</span>
       <span style="visibility: hidden"><Icon type="ios-arrow-back" size="large"/></span>
     </div>
@@ -159,6 +159,9 @@
               }
             }
           })
+        },
+        back:function(){
+          this.$router.go(-1);
         },
         confirm:function(){
           var askT,reportT,showT;
