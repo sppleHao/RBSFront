@@ -54,7 +54,12 @@ Axios.interceptors.response.use(res =>{
     else {
       location.href = '/MTlogin'
     }
-  } else if (error.response.status === 500) {
+    return Promise.reject(error.response.data)
+  }
+  else if (error.response.status ===404){
+    // location.href = '/MTlogin'
+  }
+  else if (error.response.status === 500) {
     // 服务器错误
     // do something
     console.log('Sever error')

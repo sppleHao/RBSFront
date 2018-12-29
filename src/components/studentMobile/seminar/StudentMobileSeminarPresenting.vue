@@ -9,7 +9,7 @@
       <div style="display: flex;height:8vmax;width: 100%;justify-content:center">
 
         <div style="width: 35%;justify-content: center;text-align: center">
-          <span class="span1" style="font-size:2.3vmax;color: red;">第{{presentTeamCount}}组展示中</span>
+          <span class="span1" style="font-size:2.3vmax;color: red;">第{{presentTeamCount+1}}组展示中</span>
         </div>
 
         <div style="width:30%;display:block;justify-content: center;text-align: center">
@@ -25,7 +25,7 @@
         </div>
       </div>
 
-        <div v-for="(pre,index) in allPres" style="display: flex;height:8vmax;width: 100%;justify-content:center" :key="pre.preOrder" :class="{shade:index%2==0}">
+        <div v-for="(pre,index) in pres" style="display: flex;height:8vmax;width: 100%;justify-content:center" :key="pre.preOrder" :class="{shade:index%2==0}">
 
           <div style="width: 30%;justify-content: center;text-align: center">
             <span class="span1">第{{index+1}}组</span>
@@ -116,6 +116,21 @@
 
             },{});
 
+            //监听学生提问
+            this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/raiseQuestion`, (msg) => {
+              console.log(JSON.parse(msg.body))
+              this.questionNumber = JSON.parse(msg.body)
+            },{});
+
+            let studentId = localStorage.getItem('studentId')
+
+            this.stompClient.subscribe(`/topic/client//student/${studentId}`, (msg) => {
+              console.log(JSON.parse(msg.body))
+              this.questionNumber = JSON.parse(msg.body)
+            },{});
+
+
+            //发送
             this.isConnect=true
           }, (err) => {
             // 连接发生错误时的处理函数
@@ -143,13 +158,42 @@
                   teamName:presentation.teamBaseInfoVO.teamName,
                   preOrder:presentation.teamOrder,
                   isPresent:presentation.present,
+                  attendanceId:presentation.id
                 }
 
                 pres.push(pre)
 
               })
 
-              this.pres = pres
+              let all = []
+              pres.forEach(pre=>{
+                all[pre.preOrder-1] = pre
+              })
+
+              var r = all.filter(function (s) {
+                return !(s==null);
+              });
+
+              let presentTeamCount=0;
+
+              for (let pre in r){
+                if (pre.isPresent==1){
+                  presentTeamCount+=1;
+                }
+              }
+
+              this.presentTeamCount = presentTeamCount;
+
+              let studentId = localStorage.getItem('studentId')
+
+              console.log(r)
+
+              this.stompClient.send(`/app/student/${studentId}`,
+                {},
+                JSON.stringify({attendanceId:r[presentTeamCount].attendanceId}),
+              )
+
+              this.pres = r
 
 
             })
@@ -158,11 +202,11 @@
             })
         },
         raiseQuestion(){
-            let userId = localStorage.getItem('userId')
-            if (userId){
+            let studentId = localStorage.getItem('studentId')
+            if (studentId){
               let message = {
-                userId:userId,
-                attendanceId:this.allPres[this.presentTeamCount]
+                studentId:studentId,
+                attendanceId:this.pres[this.presentTeamCount].attendanceId
               }
               this.stompClient.send(`/app/teacher/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/raiseQuestion`,
                 {},
@@ -176,28 +220,6 @@
         }
       },
       computed:{
-        allPres:function () {
-          let all = []
-          this.pres.forEach(pre=>{
-            all[pre.preOrder-1] = pre
-          })
-
-          var r = all.filter(function (s) {
-            return !(s==null);
-          });
-
-          let presentTeamCount=0;
-
-          for (let pre in r){
-            if (pre.isPresent==1){
-              presentTeamCount+=1;
-            }
-          }
-
-          this.presentTeamCount = presentTeamCount;
-
-          return r
-        }
       },
     }
 </script>

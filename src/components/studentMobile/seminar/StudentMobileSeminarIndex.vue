@@ -201,7 +201,7 @@
         this.getMyTeam(this.getMyTeamUrl,{})
       },
       methods:{
-        //todo 没组队不能访问
+        //没组队不能访问
         getMyTeam:async function(url,params){
           await this.$http.get(url,{params})
             .then(res=>{
@@ -245,6 +245,7 @@
             })
             .catch((err)=>{
               console.log(err)
+              this.$router.push({name:'StudentMobileAccountIndex'})
             })
 
             this.getSeminar(this.getSeminarUrl+this.team.class.classId,{})
@@ -270,8 +271,8 @@
                 seminarTopic:datas.seminarTopic,
                 seminarOrder:datas.seminarSerial,
                 seminarIntro:datas.seminarIntro,
-                // seminarState:seminarState,
-                seminarState:'已完成',
+                seminarState:seminarState,
+                // seminarState:'正在进行',
                 signUpStartTime:datas.enrollStartTime,
                 signUpEndTime:datas.enrollEndTime,
                 maxTeam:datas.maxTeam,
