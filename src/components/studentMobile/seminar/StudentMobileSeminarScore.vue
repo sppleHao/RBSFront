@@ -52,21 +52,68 @@
 
       </CellGroup>
 
-
-      <div style="display: flex;height:8vmax;width: 100%;justify-content:center">
-        <div style="width: 30%;justify-content: center;text-align: center">
-          <span class="span1">PPT</span>
+      <div class="white" style="display: flex;height:8vmax;width: 100%;justify-content:center">
+        <div style="width: 30%;margin-left: 1vmax">
+          <span class="span1">展示</span>
         </div>
 
-        <div style="width:40%;display:block;justify-content: center;text-align: center">
-          <span class="span2">5.0</span>
+        <div class="hidden-div">
         </div>
 
-        <div  style="width:30%;visibility: hidden;justify-content: center;text-align: center">
-          <span class="span1">分数</span>
+        <div class="left-div">
+          <span v-if="score.presentationScore" class="span2 score">{{score.presentationScore}}</span>
+          <span v-else class="span2 score">0</span>
         </div>
       </div>
+
+      <div class="gray" style="display: flex;height:8vmax;width: 100%;justify-content:center">
+        <div style="width: 30%;margin-left: 1vmax">
+          <span class="span1">提问</span>
+        </div>
+
+        <div class="hidden-div">
+        </div>
+
+        <div class="left-div">
+          <span v-if="score.questionScore" class="span2 score">{{score.questionScore}}</span>
+          <span v-else class="span2 score">0</span>
+        </div>
+
+      </div>
+
+
+      <div class="white" style="display: flex;height:8vmax;width: 100%;justify-content:center">
+        <div style="width: 30%;margin-left: 1vmax">
+          <span class="span1">书面报告</span>
+        </div>
+
+        <div class="hidden-div">
+        </div>
+
+        <div  class="left-div">
+          <span v-if="score.questionScore" class="span2 score">{{score.questionScore}}</span>
+          <span v-else class="span2 score">0</span>
+        </div>
+
+      </div>
+
+        <div class="gray" style="display: flex;height:8vmax;width: 100%;justify-content:center">
+          <div style="width: 30%;margin-left: 1vmax">
+          <span class="span1">总分</span>
+          </div>
+
+        <div class="hidden-div">
+
+        </div>
+        <div  class="left-div">
+          <span v-if="score.totalScore" class="span2 score">{{score.totalScore}}</span>
+          <span v-else class="span2 score">0</span>
+        </div>
+
+      </div>
     </div>
+
+
   </div>
 </template>
 
@@ -84,17 +131,19 @@
         className:this.$route.query.className,
         preOrder:this.$route.query.preOrder,
         seminarTopic:this.$route.query.seminarTopic,
-        getMyTeamUrl:``
+        getMyTeamUrl:`seminarscore/team/${this.$route.query.teamId}`,
+        score:''
       }
     },
     created() {
-      this.getTeamScore(this.getMyTeamUrl,{})
+      this.getTeamScore(this.getMyTeamUrl,{seminarId:this.$route.query.seminarId})
     },
     methods:{
       getTeamScore(url,params){
-        this.$http.get()
+        this.$http.get(url,{params:params})
           .then(res=>{
-
+              this.score = res.data
+            console.log(this.score)
           })
             .catch(err=>{
               console.log(err)
@@ -157,8 +206,8 @@
   }
 
   .top-list div{
-    padding-top: 4%;
-    padding-bottom: 4%;
+    padding-top: 3%;
+    padding-bottom: 3%;
     height: 10%;
     display: flex;
     /*实现垂直居中*/
@@ -166,8 +215,8 @@
   }
 
   .list div{
-    padding-top: 4%;
-    padding-bottom: 4%;
+    padding-top: 3%;
+    padding-bottom: 3%;
     height: 10%;
     display: flex;
     /*实现垂直居中*/
@@ -215,5 +264,15 @@
     /*padding: 20px;*/
     height: 5vmax;
     width: 100%;
+  }
+  .hidden-div{
+    width:60%;display:block;visibility: hidden;
+  }
+  .left-div{
+    width: 10%;
+  }
+  .score{
+    font-size: 3vmax;
+    color: green;
   }
 </style>

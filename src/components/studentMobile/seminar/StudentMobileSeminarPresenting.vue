@@ -9,7 +9,7 @@
       <div style="display: flex;height:8vmax;width: 100%;justify-content:center">
 
         <div style="width: 35%;justify-content: center;text-align: center">
-          <span class="span1" style="font-size:2.3vmax;color: red;">第{{presentIndex}}组展示中</span>
+          <span class="span1" style="font-size:2.3vmax;color: red;">第{{presentTeamCount}}组展示中</span>
         </div>
 
         <div style="width:30%;display:block;justify-content: center;text-align: center">
@@ -62,7 +62,7 @@
           questionNumber:0,
           getTeamListUrl:`attendance`,
           stompClient:'',
-          presentIndex:0,
+          presentTeamCount:0,
           timer:'',
           isConnect:false,
         }
@@ -107,23 +107,16 @@
 
             //监听下一组
             this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/nextTeam`, (msg) => {
-              // console.log('下一组')
               console.log(JSON.parse(msg.body))
-              this.presentIndex = JSON.parse(msg.body)
+              this.presentTeamCount = JSON.parse(msg.body)
             },{});
 
             //监听抽取提问
             this.stompClient.subscribe(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/pickQuestion`, (msg) => {
-              // console.log('抽取提问')
-              console.log(msg);
+
             },{});
 
             this.isConnect=true
-            // 发送学生提问
-            // this.stompClient.send(`/topic/client/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/nextTeam`,
-            //   {},
-            //   JSON.stringify('91'),
-            // )   //用户加入接口
           }, (err) => {
             // 连接发生错误时的处理函数
             console.log('失败')
@@ -165,10 +158,21 @@
             })
         },
         raiseQuestion(){
-            this.stompClient.send(`/app/teacher/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/raiseQuestion`,
+            let userId = localStorage.getItem('userId')
+            if (userId){
+              let message = {
+                userId:userId,
+                attendanceId:this.allPres[this.presentTeamCount]
+              }
+              this.stompClient.send(`/app/teacher/class/${this.$route.query.classId}/seminar/${this.$route.query.seminarId}/raiseQuestion`,
                 {},
-                JSON.stringify('91'),
+                JSON.stringify(message),
               )
+            }
+            else {
+
+            }
+
         }
       },
       computed:{
@@ -182,15 +186,15 @@
             return !(s==null);
           });
 
-          let presentIndex=0;
+          let presentTeamCount=0;
 
           for (let pre in r){
             if (pre.isPresent==1){
-              presentIndex+=1;
+              presentTeamCount+=1;
             }
           }
 
-          this.presentIndex=presentIndex+1
+          this.presentTeamCount = presentTeamCount;
 
           return r
         }

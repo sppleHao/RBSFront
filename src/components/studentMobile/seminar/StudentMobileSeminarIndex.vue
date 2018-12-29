@@ -138,7 +138,7 @@
       </Modal>
     </div>
     <div class="footer" v-if="myTeamPresentation.isTeamSignUp">
-      <Button class="button-large"  style="background-color: #EA4C4C;color: #FFFFFF;"  @click="enterSeminarPresenting">进入讨论课</Button>
+      <Button class="button-large" v-if="seminar.seminarState=='正在进行'"  style="background-color: #EA4C4C;color: #FFFFFF;"  @click="enterSeminarPresenting">进入讨论课</Button>
       <Button class="button-large" v-if="seminar.seminarState!='已完成'" style="background-color: #F8F8F8 ;color:#96C864; border:#AAC882 1px solid; " @click="showModal('ppt')">提交PPT</Button>
       <Button class="button-large" v-if="seminar.seminarState=='已完成'&&!isAfterReportDDL" style="background-color: #F8F8F8 ;color:#96C864; border:#AAC882 1px solid; "  @click="showModal('report')">书面报告提交</Button>
       <button class="button-large" v-if="seminar.seminarState=='已完成'&&isAfterReportDDL"  style="background-color:#96C864; border:#AAC882 1px solid;" @click="enterSeminarScore">查看成绩</button>
@@ -270,7 +270,8 @@
                 seminarTopic:datas.seminarTopic,
                 seminarOrder:datas.seminarSerial,
                 seminarIntro:datas.seminarIntro,
-                seminarState:seminarState,
+                // seminarState:seminarState,
+                seminarState:'已完成',
                 signUpStartTime:datas.enrollStartTime,
                 signUpEndTime:datas.enrollEndTime,
                 maxTeam:datas.maxTeam,
@@ -305,6 +306,7 @@
                     this.myTeamPresentation.attendanceId = presentation.id
                     this.seminar.reportDDL = presentation.reportDDL
                     this.isAfterReportDDL = this.isAfterDDL(presentation.reportDDL)
+                    console.log(this.isAfterReportDDL)
                   }
               })
 
@@ -381,7 +383,9 @@
               seminarIntro:this.seminar.seminarIntro,
               className:this.team.class.className,
               preOrder:this.myTeamPresentation.myTeamPreOrder,
-              seminarTopic:this.seminar.seminarTopic
+              seminarTopic:this.seminar.seminarTopic,
+              teamId:this.team.teamId,
+              seminarId:this.seminar.seminarId
             }
           })
         },
@@ -433,7 +437,8 @@
         },
         isAfterDDL(teamEndTime){
             let nowTime = new Date().Format("yyyy/MM/dd hh:mm:ss")
-            if ((Date.parse(teamEndTime)-Date.parse(nowTime))<0){
+            //截止时间大于现在时间
+            if ((Date.parse(teamEndTime)-Date.parse(nowTime))>0){
               return false
             }
             else {

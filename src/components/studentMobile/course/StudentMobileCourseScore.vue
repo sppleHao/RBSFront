@@ -26,7 +26,7 @@
           <div class="content" v-if="round.vis">
 
             <div class="table" v-for="seminar in round.mySeminars" :key="seminar.seminarId">
-              <div class="seminar-cell" @click="seminar.vis = !seminar.vis">
+              <div class="seminar-cell" @click="getTeamScore(seminar)">
                 <span class="seminar-cell-front">{{seminar.seminarSerial}}</span>
                 <span class="seminar-cell-center">{{seminar.seminarTopic}}</span>
                 <span class="seminar-cell-end">
@@ -38,21 +38,24 @@
                 <div class="score-cell">
                   <div class="part-score-cell">
                     展示:
-                    <span class="part-score">
-                      {{`5.0`}}
+                    <span class="part-score" v-if="seminar.score.presentationScore">
+                      {{seminar.score.presentationScore}}
                     </span>
+                    <span v-else class="part-score">0</span>
                   </div>
                   <div class="part-score-cell">
                     提问:
-                    <span class="part-score">
-                      {{`5.0`}}
+                    <span class="part-score" v-if="seminar.score.questionScore">
+                      {{seminar.score.questionScore}}
                     </span>
+                    <span v-else class="part-score">0</span>
                   </div>
                   <div class="part-score-cell">
                     书面报告
-                    <span class="part-score">
-                    {{`5.0`}}
+                    <span class="part-score" v-if="seminar.score.reportScore">
+                    {{seminar.score.reportScore}}
                     </span>
+                    <span v-else class="part-score">0</span>
                   </div>
                 </div>
               </div>
@@ -79,13 +82,32 @@
           courseName:this.$route.query.courseName,
           title:this.$route.query.courseName,
           rounds:'',
+          getMyTeamUrl:`course/${this.$route.query.courseId}/team/mine`,
           getRoundsUrl:`course/${this.$route.query.courseId}/seminars`,
+          getScoreUrl:'',
+          teamId:''
         }
       },
       created () {
-        this.getRounds(this.getRoundsUrl,{});
+        this.getMyTeam(this.getMyTeamUrl,{})
+        this.getRounds(this.getRoundsUrl,{})
       },
       methods:{
+        getMyTeam:function(url,params){
+          this.$http.get(url,{params})
+            .then((res)=>{
+
+              let datas = res.data
+
+              this.teamId = datas.teamInfo.id
+
+              this.getScoreUrl = `seminarscore/team/${datas.teamInfo.id}`
+
+            })
+            .catch(err=>{
+              console.log(err)
+            })
+        },
         getRounds:function (url,params) {
           this.$http.get(url,{params:{params}})
             .then(res=>{
@@ -135,6 +157,44 @@
             .catch(err=>{
 
             })
+        },
+        getTeamScore:async function(seminar){
+          if (!this.teamId){
+            return
+          }
+          if (seminar.vis){
+            seminar.vis ==false
+          }
+          else if (seminar.score){
+            seminar.vis ==true
+          }
+          else {
+            let seminarId ={
+              seminarId : seminar.seminarId
+            }
+
+            await this.$http.get(this.getScoreUrl,{params:seminarId})
+              .then(res=>{
+
+                console.log(this.rounds)
+
+
+                this.rounds.forEach(round=>{
+                  round.mySeminars.forEach(seminarInfo=>{
+                    if (seminar.seminarId == seminarInfo.seminarId){
+                      seminar.score = res.data
+                    }
+                  })
+                })
+
+              })
+              .catch(err=>{
+                console.log(err)
+              })
+            seminar.vis = true
+          }
+
+
         }
       }
     }
