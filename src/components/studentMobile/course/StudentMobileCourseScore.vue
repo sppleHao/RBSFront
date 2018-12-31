@@ -106,6 +106,10 @@
             })
             .catch(err=>{
               console.log(err)
+              if (err.data='None Data'){
+                this.$Message.error(err.message)
+                this.$router.go(-1)
+              }
             })
         },
         getRounds:function (url,params) {
@@ -159,16 +163,18 @@
             })
         },
         getTeamScore:async function(seminar){
+          console.log(seminar)
           if (!this.teamId){
             return
           }
           if (seminar.vis){
-            seminar.vis ==false
+            seminar.vis =false
           }
           else if (seminar.score){
-            seminar.vis ==true
+            seminar.vis = true
           }
           else {
+            console.log('3')
             let seminarId ={
               seminarId : seminar.seminarId
             }
@@ -187,14 +193,15 @@
                   })
                 })
 
+                seminar.vis = true
+
+
               })
               .catch(err=>{
                 console.log(err)
               })
-            seminar.vis = true
+
           }
-
-
         }
       }
     }

@@ -14,14 +14,18 @@
             </span>
           </Cell>
 
-          <Cell class="white" title="主题" :extra="seminar.seminarTopic">
-            <span class="span1" slot="default">
-              主题
-            </span>
-            <span class="span1" slot="extra">
-              {{seminar.seminarTopic}}
-            </span>
-          </Cell>
+          <div class="white" style="width:100%;display:flex">
+            <div style="width: 30%;">
+                <span class="span1" style="margin-left: 3vmax" slot="default">
+                  主题
+                </span>
+            </div>
+            <div style="width: 70%;text-align: center;">
+                  <span class="span2" slot="extra">
+                  {{seminar.seminarTopic}}
+                </span>
+            </div>
+          </div>
 
           <Cell class="gray">
             <span class="span1" slot="default">
@@ -245,10 +249,15 @@
             })
             .catch((err)=>{
               console.log(err)
-              this.$router.push({name:'StudentMobileAccountIndex'})
+              if (err.data='None Data'){
+                this.$Message.error(err.message)
+                this.$router.go(-1)
+              }
             })
 
             this.getSeminar(this.getSeminarUrl+this.team.class.classId,{})
+            this.getTeamSignUpState(this.getTeamSignUpStateUrl,
+              {seminarId:this.$route.query.seminarId,cClassId:this.team.class.classId})
         },
         getSeminar:async function (url,params) {
 
@@ -284,9 +293,6 @@
             .catch((err)=>{
               console.log(err)
             })
-
-            this.getTeamSignUpState(this.getTeamSignUpStateUrl,
-              {seminarId:this.seminar.seminarId,cClassId:this.team.class.classId})
         },
         //通过seminarId和classId查找所有的presentations，并筛选
         getTeamSignUpState:function (url,params) {

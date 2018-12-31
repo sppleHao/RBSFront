@@ -30,9 +30,27 @@
       components: {StudentMobileHeader},
       data() {
         return {
+          getUserUrl:'/user/information'
         }
       },
+      created(){
+        this.getUser(this.getUserUrl,{})
+      },
       methods:{
+        getUser:function(url,params){
+          this.$http.get(this.getUserUrl,{params})
+            .then((res)=>{
+
+              let datas = res.data
+
+              localStorage.setItem('userId',datas.id)
+
+            })
+            .catch(err=>
+            {
+
+            })
+        },
         enterCourse:function(){
           this.$router.push({
             name:'StudentMobileCourseIndex',

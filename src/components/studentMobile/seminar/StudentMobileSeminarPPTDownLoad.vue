@@ -4,14 +4,14 @@
     <student-mobile-header :title="title"></student-mobile-header>
   </div>
   <div class="main">
-    <CellGroup>
+    <CellGroup v-if="sendBack">
       <div v-for="(pre,index) in allPres" :key="pre.attendanceId" :class="{shade:index%2!=0}" style="display: flex;height:8vmax;align-items: center;">
         <div style="width: 30%;justify-content: center;text-align: center">
           <span class="span1" slot="default">第{{index+1}}组</span>
         </div>
         <div style="width: 40%;justify-content: center;text-align: center">
           <span class="span2" v-if="!pre.teamId">未报名</span>
-          <span class="span2" v-else-if="pre.preFileName" slot="default"><a  @click="downloadPPT(pre.attendanceId)">{{pre.preFileName}}</a></span>
+          <span class="span2" v-else-if="pre.preFileName" slot="default"><a  @click="downloadPPT(pre)">{{pre.preFileName}}</a></span>
           <span class="span2" style="color: red" v-else>暂未上传</span>
         </div>
         <Cell  style="width: 30%;justify-content: center;text-align: center">
@@ -33,7 +33,8 @@
             title:this.$route.query.courseName+'-'+"讨论课",
             pres:[],
             maxTeam:this.$route.query.maxTeam,
-            getTeamListUrl:`attendance`
+            getTeamListUrl:`attendance`,
+            sendBack:false
           }
       },
       created(){
@@ -64,6 +65,7 @@
               })
 
               this.pres = pres
+              this.sendBack = true
 
 
             })
@@ -71,20 +73,21 @@
 
             })
         },
-          downloadPPT(id){
-            this.$http.get(`attendance/${id}/ppt`,{
-              responseType:'arraybuffer'
+        downloadPPT(pre){
+          this.$http.get(`attendance/${pre.attendanceId}/ppt`,{
+            responseType:'arraybuffer'
+          })
+            .then(res=>{
+              // let blob = new window.Bolb([res.data],{type:"application/force-download"})
+              // let objectUrl = URL.createObjectURL(blob)
+              // window.location.href = objectUrl;
+              this.$downloadFile(pre.preFileName,res.data)
+              this.$Message.success('下载成功')
             })
-              .then(res=>{
-                let blob = new Bolb([res.data],{type:"application/force-download"})
-                let objectUrl = URL.createObjectURL(blob)
-                window.location.href = objectUrl;
-                this.$Message.success('下载成功')
-              })
-              .catch(err=>{
-                console.log(err)
-              })
-          }
+            .catch(err=>{
+              console.log(err)
+            })
+        }
       },
       computed:{
         allPres:function () {

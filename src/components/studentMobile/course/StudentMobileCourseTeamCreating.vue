@@ -24,7 +24,7 @@
                 班级:
           </span>
           <!--<span class="label" style="color: black">{{this.$route.query.className}}</span>-->
-          <Select v-model="team.classId" style="width:200px;">
+          <Select v-model="team.cClassId" style="width:200px;">
             <Option v-for="cl in classes" :value="cl.classId" :key="cl.classId">{{ cl.className }}</Option>
           </Select>
         </div>
@@ -75,7 +75,7 @@
       components: {ThreePartCellWithCheckBox, StudentMobileHeader},
       data(){
           return {
-            title: this.$route.query.courseName + this.$route.query.className,
+            title: this.$route.query.courseName,
             spanBlack:'font-size:2.1vmax',
             spanGreen:'font-size:2.1vmax;color:green;',
             selected:'',
@@ -89,19 +89,10 @@
               courseId:parseInt(this.$route.query.courseId),
               cClassId:parseInt(this.$route.query.classId)
             },
-            classes:[
-              {
-                className:'2016(1)',
-                classId:1
-              },
-              {
-                className:'2016(2)',
-                classId:2
-              }
-            ],
+            classes:[],
             inviteStudentsId:[],
             NTStudents:[],
-            getClassListUrl:`/${this.$route.query.courseId}/class`,
+            getClassListUrl:`course/${this.$route.query.courseId}/class`,
             getUserIdUrl:'user/information',
             getNTStudentsUrl:`course/${this.$route.query.courseId}/team/free`,
             createTeamUrl:'team'
@@ -125,7 +116,9 @@
 
             this.NTStudents.forEach(NTStudent=>{
               if (NTStudent.userName.startsWith(selected)||NTStudent.account.startWith(selected)){
-                list.push(NTStudent)
+                if (NTStudent.studentId!=this.user.userId){
+                  list.push(NTStudent)
+                }
               }
             })
 
@@ -191,6 +184,7 @@
                   sharedCourse:'',
                   isSelect:false
                 }
+
                 NTStudents.push(s)
               })
 
@@ -206,7 +200,12 @@
               return
             }
 
-            if (!this.team.classId){
+            if (!this.team.leaderId){
+              this.$Message.error('组长不能为空')
+              return
+            }
+
+            if (!this.team.cClassId){
               this.$Message.error('请选择班级')
             }
 
@@ -224,7 +223,7 @@
 
               let team=this.team
               team.leaderId = this.user.userId
-              team.students= this.students
+              team.students= students
 
               console.log(team)
 

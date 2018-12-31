@@ -4,7 +4,7 @@
       <student-mobile-header :title="title"></student-mobile-header>
     </div>
     <div class="main">
-      <CellGroup>
+      <CellGroup v-if="sendBack">
         <div v-for="(pre,index) in allPres" :key="pre.preOrder" style="display: flex;height:8vmax;align-items: center;" :class="{shade:index%2==0}"  >
           <Cell>
             <span class="span1" slot="default">
@@ -44,6 +44,7 @@
             title:this.$route.query.courseName+'-'+"讨论课",
             maxTeam:this.$route.query.maxTeam,
             pres:[],
+            sendBack:false,
             getTeamListUrl:`attendance`,
             signUpUrl:`attendance`,
           }
@@ -74,6 +75,7 @@
 
                 this.pres = pres
 
+                this.sendBack = true
 
               })
               .catch(err=>{

@@ -9,9 +9,11 @@
           <span style="text-align: center;font-size: 4vmax;color: green">
             {{team.teamNumber}}
             {{team.teamName}}
-            <span v-if="team.teamState=='valid'">{{valid}}</span>
-            <span v-if="team.teamState=='invalid'" style="color: red">{{invalid}}</span>
-            <span v-if="team.teamState=='apply'" style="color: orange">{{apply}}</span>
+          </span>
+          <span style="position: absolute;right: 5vmax;font-size: 3vmax;">
+            <span v-if="team.teamState=='valid'" style="color: green">valid</span>
+            <span v-if="team.teamState=='invalid'" style="color: red">invalid</span>
+            <span v-if="team.teamState=='apply'" style="color: orange">apply</span>
           </span>
         </div>
         <div v-if="team.teamLeader" class="team-cell">
@@ -20,11 +22,11 @@
           <span class="team-cell-end">{{team.teamLeader.userName}}</span>
         </div>
 
-        <div class="memberScrollLarge" :class="{memberScroll:isLeader}">
+        <div class="memberScroll" :class="{memberScrollLarge:!isLeader}">
           <div class="team-cell" v-for="teamMember in team.teamMembers">
             <span class="team-cell-front">组员</span>
             <span class="team-cell-center">{{teamMember.account}}</span>
-            <div class="team-cell-end" v-if="isLeader" @click="deleteMember(teamMember.studentId)">{{teamMember.userName}}</div>
+            <div class="team-cell-end" v-if="isLeader" @click="deleteMember(teamMember)">{{teamMember.userName}}</div>
             <div class="team-cell-end" v-else>{{teamMember.userName}}</div>
           </div>
         </div>
@@ -78,17 +80,19 @@
         <Button class="button_three" slot="footer" type="success" @click="sendApply">SURE
         </Button>
       </Modal>
+
+
     </div>
 
     <div v-if="isLeader" class="footer">
-      <div v-if="team.teamState=='invalid'">
+      <div v-if="team.teamState=='invalid'||team.teamState=='apply'">
         <Button class="button-three" type="error"  ghost @click="applyModal = true">提交审核</Button>
       </div>
-      <div>
-        <Button v-if="team.teamState!='apply'" class="button-three" type="error" @click="dissolveTeam">解散小组</Button>
+      <div v-if="team.teamState!='apply'">
+        <Button  class="button-three" type="error" @click="dissolveTeam">解散小组</Button>
       </div>
-      <div>
-        <Button v-if="team.teamState!='apply'" class="button-three" type="success" @click="invite">添加</Button>
+      <div v-if="team.teamState!='apply'">
+        <Button  class="button-three" type="success" @click="invite">添加</Button>
       </div>
     </div>
     <div v-else class="footer">
@@ -262,18 +266,18 @@
               console.log(err)
             })
         },
-        deleteMember(memberId){
-          var params = {studentId:memberId}
-          this.$http.delete(this.deleteMemberUrl,{data: params})
-            .then(res=>{
-              this.$Message.success('删除成功！')
-              this.getMyTeam(this.getMyTeamUrl,{})
-              this.getNTStudents(this.getNTStudentsUrl,{})
-            })
-            .catch(err=>{
-              console.log(err)
-              this.$Message.error(err.message)
-            })
+        deleteMember(member){
+            var params = {studentId: member.memberId}
+            this.$http.delete(this.deleteMemberUrl, {data: params})
+              .then(res => {
+                this.$Message.success('删除成功！')
+                this.getMyTeam(this.getMyTeamUrl, {})
+                this.getNTStudents(this.getNTStudentsUrl, {})
+              })
+              .catch(err => {
+                console.log(err)
+                this.$Message.error(err.message)
+              })
         },
         leaveTeam(){
           this.$http.delete(this.leaveTeamUrl)
@@ -324,6 +328,7 @@
               .then(res=>{
                 this.$Message.success('申请成功！')
                 this.applyModal=false
+                this.getMyTeam(this.getMyTeamUrl,{})
               })
               .catch(err=>{
                 this.$Message.error('不能发送重复的请求，请等待老师处理！')

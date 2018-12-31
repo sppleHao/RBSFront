@@ -46,7 +46,7 @@ Axios.interceptors.response.use(res =>{
 }, error => {
   // 401 说明 token 验证失败
   // 可以直接跳转到登录页面，重新登录获取 token
-  if(error.response.status === 401) {
+  if(error.status === 401) {
     console.log('Need Authorization')
     if (localStorage.token){
       this.$router.go(-1)
@@ -56,10 +56,10 @@ Axios.interceptors.response.use(res =>{
     }
     return Promise.reject(error.response.data)
   }
-  else if (error.response.status ===404){
+  else if (error.status ===404){
     // location.href = '/MTlogin'
   }
-  else if (error.response.status === 500) {
+  else if (error.status === 500) {
     // 服务器错误
     // do something
     console.log('Sever error')

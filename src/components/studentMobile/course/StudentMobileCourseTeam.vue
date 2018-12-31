@@ -63,12 +63,21 @@
         </div>
       </div>
 
-
-    <div v-if="isAfterDDL&&isMainCourse" class="footer">
       <Button class="button" v-if="!myTeam" type="success" long @click="enterTeamCreating" style="background-color:#96c864">创建小组</Button>
       <Button class="button" v-else type="success" long @click="enterMyTeam" style="background-color:#96c864">我的小组({{myTeam.teamNumber}})</Button>
-    </div>
 
+      <!--<div v-if="isAfterDDL&&isMainCourse" class="footer">-->
+        <!--<Button class="button" v-if="!myTeam" type="success" long @click="enterTeamCreating" style="background-color:#96c864">创建小组</Button>-->
+        <!--<Button class="button" v-else type="success" long @click="enterMyTeam" style="background-color:#96c864">我的小组({{myTeam.teamNumber}})</Button>-->
+      <!--</div>-->
+      <!--<div v-if="!isMainCourse" class="footer">-->
+        <!--<Button class="button-disable" v-if="!myTeam" type="success" long  disabled>未组队(非主课程)</Button>-->
+        <!--<Button class="button-disable" v-else type="success" long disabled>我的小组({{myTeam.teamNumber}})（非主课程）</Button>-->
+      <!--</div>-->
+      <!--<div v-else-if="!isAfterDDL" class="footer">-->
+        <!--<Button class="button-disable" v-if="!myTeam" type="success" long  disabled>创建小组（组队期限已过）</Button>-->
+        <!--<Button class="button-disable" v-else type="success" long disabled>我的小组({{myTeam.teamNumber}})（组队期限已过）</Button>-->
+      <!--</div>-->
   </div>
   </div>
 </template>
@@ -180,7 +189,9 @@
 
             })
             .catch(err=>{
-              console.log(err)
+              if (err.data='None Data'){
+                this.myTeam= ''
+              }
             })
         },
         getAllTeamInCourse:async function (url,params) {
@@ -220,8 +231,14 @@
             })
         },
         getTeamInfo:async function(url,team,params){
-          if (team.vis){
+          if (!team.teamId){
+            return
+          }
+          else if (team.vis){
             team.vis=false
+          }
+          else if (team.teamMembers||team.teamLeader){
+            team.vis =true
           }
           else {
             // let info = null
@@ -438,6 +455,13 @@
     background-color: #96C864;
     border: none;
     color: #FFFFFF;
+    text-align: center;
+    font-size: 3.1vmax;
+    /*padding: 20px;*/
+    width: 100%;
+  }
+  .button-disable{
+    display: inline-block;
     text-align: center;
     font-size: 3.1vmax;
     /*padding: 20px;*/

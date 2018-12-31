@@ -6,6 +6,13 @@
     <div class="main">
 
       <div class="scroll">
+        <div v-if="rounds==false" style="width: 100%;height: 80%;">
+          <div style="text-align: center;margin-top: 50%">
+           <span style="font-size: 4vmax">
+            该课程尚未创建讨论课
+            </span>
+          </div>
+        </div>
 
         <div  v-for="round in rounds" :key="round.roundId">
           <div class="title" @click="round.vis=!round.vis" >
