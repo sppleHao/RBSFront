@@ -63,6 +63,7 @@
         </div>
       </div>
 
+      <!--todo 测试用-->
       <Button class="button" v-if="!myTeam" type="success" long @click="enterTeamCreating" style="background-color:#96c864">创建小组</Button>
       <Button class="button" v-else type="success" long @click="enterMyTeam" style="background-color:#96c864">我的小组({{myTeam.teamNumber}})</Button>
 
