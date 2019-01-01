@@ -200,11 +200,6 @@
               return
             }
 
-            if (!this.team.leaderId){
-              this.$Message.error('组长不能为空')
-              return
-            }
-
             if (!this.team.cClassId){
               this.$Message.error('请选择班级')
             }

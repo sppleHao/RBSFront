@@ -31,7 +31,10 @@ module.exports = {
     },
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST
+    // host: 'localhost', // can be overwritten by process.env.HOST
+    // host:'192.168.0.111',
+    host:'0.0.0.0',
+    // port:3000,
     port: 8081, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
@@ -83,5 +86,14 @@ module.exports = {
     // `npm run build --report`
     // Set to `true` or `false` to always turn it on or off
     bundleAnalyzerReport: process.env.npm_config_report
-  }
+  },
+
+  // devServer: {
+  //   historyApiFallback: true,
+  //   hot: true,
+  //   host: '0.0.0.0',   //填写你自己的IP地址
+  //   port: 8081,   //填写刚刚在dev字段中找到的port端口号
+  //   inline: true,
+  //   progress: true
+  // }
 }

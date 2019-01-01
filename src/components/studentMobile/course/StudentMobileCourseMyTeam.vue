@@ -267,7 +267,7 @@
             })
         },
         deleteMember(member){
-            var params = {studentId: member.memberId}
+            var params = {studentId: member.studentId}
             this.$http.delete(this.deleteMemberUrl, {data: params})
               .then(res => {
                 this.$Message.success('删除成功！')
